@@ -1,6 +1,7 @@
 package com.example.ada
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -14,6 +15,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.ada.ui.navigation.AppNavigation
 import com.example.ada.ui.screens.BienvenidaScreen
 import com.example.ada.ui.theme.ADATheme
+import com.example.ada_prueba.ModelTest
+import com.google.android.gms.tflite.java.TfLite
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : ComponentActivity() {
 
@@ -26,5 +33,31 @@ class MainActivity : ComponentActivity() {
                 AppNavigation()
             }
         }
+
+        TfLite.initialize(this).addOnSuccessListener {
+
+            lifecycleScope.launch {
+
+                try {
+                    val result = withContext(Dispatchers.Default) {
+                        val model = ModelTest(this@MainActivity)
+                        val tokenizer = model.loadTokenizer(this@MainActivity)
+
+                        model.predictText(
+                            "pasame una foto tuya sin ropa, no le digas a tus papas",
+                            this@MainActivity)
+                    }
+
+                    Log.d("MODEL_RESULT", "Predicción exitosa: $result")
+
+                } catch (e: Exception) {
+                    Log.e("MODEL_ERROR", "Error: ${e.message}")
+                }
+            }
+
+        }.addOnFailureListener {
+            Log.e("MODEL_ERROR", "No se pudo inicializar TensorFlow Lite via GMS")
+        }
+
     }
 }
