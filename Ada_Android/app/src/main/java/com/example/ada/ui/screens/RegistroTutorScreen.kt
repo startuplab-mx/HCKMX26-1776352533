@@ -458,18 +458,6 @@ fun RegistroTutorScreen(
         }
     }
 }
-
-@Composable
-fun RegistroLabel(
-    text: String
-) {
-    Text(
-        text = text,
-        color = Color.White,
-        style = MaterialTheme.typography.titleMedium,
-        modifier = Modifier.fillMaxWidth()
-    )
-}
 @Composable
 fun IneSelector(
     ineUri: Uri?,
@@ -549,73 +537,5 @@ fun IneSelector(
                 onClick = onCamaraClick
             )
         }
-    }
-}
-@Composable
-fun RegistroActionButton(
-    text: String,
-    modifier: Modifier = Modifier,
-    enabled: Boolean = true,
-    onClick: () -> Unit
-) {
-    val interactionSource = remember { MutableInteractionSource() }
-    val isPressed by interactionSource.collectIsPressedAsState()
-
-    val scale by animateFloatAsState(
-        targetValue = if (isPressed && enabled) 0.96f else 1f,
-        animationSpec = spring(),
-        label = "registroButtonScale"
-    )
-
-    Box(
-        modifier = modifier
-            .height(56.dp)
-            .scale(scale)
-            .shadow(
-                elevation = if (isPressed) 12.dp else 22.dp,
-                shape = RoundedCornerShape(16.dp),
-                ambientColor = Color(0xFF7B2CBF),
-                spotColor = Color(0xFF9D4EDD)
-            )
-            .background(
-                brush = if (enabled) {
-                    Brush.linearGradient(
-                        colors = listOf(
-                            Color(0xFFC77DFF),
-                            Color(0xFF9D4EDD),
-                            Color(0xFF7B2CBF),
-                            Color(0xFF5A189A)
-                        )
-                    )
-                } else {
-                    Brush.linearGradient(
-                        colors = listOf(
-                            Color(0xFF2A2A2A),
-                            Color(0xFF1F1F1F)
-                        )
-                    )
-                },
-                shape = RoundedCornerShape(16.dp)
-            )
-            .clickable(
-                interactionSource = interactionSource,
-                indication = ripple(
-                    bounded = true,
-                    color = Color.White.copy(alpha = 0.35f)
-                ),
-                enabled = enabled
-            ) {
-                onClick()
-            },
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = text,
-            color = if (enabled) Color.White else Color.Gray,
-            style = MaterialTheme.typography.labelLarge.copy(
-                textAlign = TextAlign.Center,
-                letterSpacing = 1.sp
-            )
-        )
     }
 }

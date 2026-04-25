@@ -1,6 +1,8 @@
 package com.example.ada.ui.screens
 
 
+import android.graphics.Bitmap
+import android.net.Uri
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -28,6 +30,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -42,10 +48,23 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.ada.R
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ripple
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
+import coil.compose.rememberAsyncImagePainter
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 @Composable
 fun ResultadoInfanteScreen(
     onBackClick: () -> Unit
 ) {
+    var codigo by remember { mutableStateOf("") }
+    fun generarCodigo(): String {
+        val chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
+        return (1..6)
+            .map { chars.random() }
+            .joinToString("")
+    }
     val infiniteTransition = rememberInfiniteTransition(label = "gradient")
 
     val offset by infiniteTransition.animateFloat(
@@ -133,6 +152,8 @@ fun ResultadoInfanteScreen(
                 modifier = Modifier.size(44.dp)
             )
         }
+
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -220,8 +241,140 @@ fun ResultadoInfanteScreen(
                     contentDescription = "Candado",
                     modifier = Modifier.size(125.dp)
                 )
+
+            }
+            Spacer(modifier = Modifier.height(40.dp))
+
+            RegistroActionButton(
+                text = "Vincular",
+                modifier = Modifier.fillMaxWidth(0.6f),
+                onClick = {
+                    codigo = generarCodigo()
+                }
+            )
+            if (codigo.isNotEmpty()) {
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Text(
+                    text = "Tu código de vinculación",
+                    color = Color(0xFFB8A9FF),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Box(
+                    modifier = Modifier
+                        .shadow(
+                            elevation = 22.dp,
+                            shape = RoundedCornerShape(18.dp),
+                            ambientColor = Color(0xFF7B2CBF),
+                            spotColor = Color(0xFFC77DFF)
+                        )
+                        .background(
+                            brush = Brush.linearGradient(
+                                colors = listOf(
+                                    Color(0xFF5A189A),
+                                    Color(0xFF7B2CBF),
+                                    Color(0xFF9D4EDD)
+                                )
+                            ),
+                            shape = RoundedCornerShape(18.dp)
+                        )
+                        .padding(horizontal = 28.dp, vertical = 14.dp)
+                ) {
+                    Text(
+                        text = codigo,
+                        color = Color.White,
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            letterSpacing = 4.sp
+                        )
+                    )
+                }
             }
         }
 
+    }
+}
+
+@Composable
+fun RegistroLabel(
+    text: String
+) {
+    Text(
+        text = text,
+        color = Color.White,
+        style = MaterialTheme.typography.titleMedium,
+        modifier = Modifier.fillMaxWidth()
+    )
+}
+
+@Composable
+fun RegistroActionButton(
+    text: String,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    onClick: () -> Unit
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+
+    val scale by animateFloatAsState(
+        targetValue = if (isPressed && enabled) 0.96f else 1f,
+        animationSpec = spring(),
+        label = "registroButtonScale"
+    )
+
+    Box(
+        modifier = modifier
+            .height(56.dp)
+            .scale(scale)
+            .shadow(
+                elevation = if (isPressed) 12.dp else 22.dp,
+                shape = RoundedCornerShape(16.dp),
+                ambientColor = Color(0xFF7B2CBF),
+                spotColor = Color(0xFF9D4EDD)
+            )
+            .background(
+                brush = if (enabled) {
+                    Brush.linearGradient(
+                        colors = listOf(
+                            Color(0xFFC77DFF),
+                            Color(0xFF9D4EDD),
+                            Color(0xFF7B2CBF),
+                            Color(0xFF5A189A)
+                        )
+                    )
+                } else {
+                    Brush.linearGradient(
+                        colors = listOf(
+                            Color(0xFF2A2A2A),
+                            Color(0xFF1F1F1F)
+                        )
+                    )
+                },
+                shape = RoundedCornerShape(16.dp)
+            )
+            .clickable(
+                interactionSource = interactionSource,
+                indication = ripple(
+                    bounded = true,
+                    color = Color.White.copy(alpha = 0.35f)
+                ),
+                enabled = enabled
+            ) {
+                onClick()
+            },
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = text,
+            color = if (enabled) Color.White else Color.Gray,
+            style = MaterialTheme.typography.labelLarge.copy(
+                textAlign = TextAlign.Center,
+                letterSpacing = 1.sp
+            )
+        )
     }
 }
