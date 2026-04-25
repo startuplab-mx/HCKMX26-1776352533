@@ -1,4 +1,4 @@
-package com.example.ada_1.ui.screens
+package com.example.ada.ui.screens
 
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
