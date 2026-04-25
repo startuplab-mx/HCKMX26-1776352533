@@ -59,6 +59,8 @@ fun ResultadoInfanteScreen(
     onBackClick: () -> Unit
 ) {
     var codigo by remember { mutableStateOf("") }
+    var mostrarCodigo by remember { mutableStateOf(false) }
+
     fun generarCodigo(): String {
         val chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
         return (1..6)
@@ -161,18 +163,15 @@ fun ResultadoInfanteScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            Spacer(modifier = Modifier.height(90.dp))
+            Spacer(modifier = Modifier.height(70.dp))
 
             Image(
                 painter = painterResource(id = R.drawable.logo_ada),
                 contentDescription = "Logo Ada",
-                modifier = Modifier.size(160.dp)
+                modifier = Modifier.size(250.dp)
             )
-
-            Spacer(modifier = Modifier.height(40.dp))
-
             Text(
-                text = "Este enlace ya ha sido analizado.",
+                text = "Registro realizado correctamente.",
                 color = Color.White,
                 style = MaterialTheme.typography.titleLarge,
                 textAlign = TextAlign.Center
@@ -181,17 +180,8 @@ fun ResultadoInfanteScreen(
             Spacer(modifier = Modifier.height(12.dp))
 
             Text(
-                text = "No es necesario realizar ninguna otra acción.",
+                text = "¿Quieres vincularte con un tutor?",
                 color = Color(0xFFD8CCFF),
-                style = MaterialTheme.typography.bodyLarge,
-                textAlign = TextAlign.Center
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = "Tu dispositivo está protegido.",
-                color = Color(0xFFB8A9FF),
                 style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center
             )
@@ -246,14 +236,17 @@ fun ResultadoInfanteScreen(
             Spacer(modifier = Modifier.height(40.dp))
 
             RegistroActionButton(
-                text = "Vincular",
+                text = if (mostrarCodigo) "Ocultar código" else "Vincular",
                 modifier = Modifier.fillMaxWidth(0.6f),
                 onClick = {
-                    codigo = generarCodigo()
+                    if (codigo.isEmpty()) {
+                        codigo = generarCodigo()
+                    }
+
+                    mostrarCodigo = !mostrarCodigo
                 }
             )
-            if (codigo.isNotEmpty()) {
-
+            if (mostrarCodigo && codigo.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(24.dp))
 
                 Text(
