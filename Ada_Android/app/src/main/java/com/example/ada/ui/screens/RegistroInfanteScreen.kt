@@ -1,8 +1,13 @@
 package com.example.ada.ui.screens
 
+<<<<<<< HEAD
 import android.util.Log
 import androidx.compose.animation.animateColorAsState
+=======
+
+>>>>>>> b4bf3a2804dca08b7a378eee923932d9cc593dc9
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -12,7 +17,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,30 +25,60 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.material3.Text
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.ada.R
+import androidx.compose.material3.*
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+<<<<<<< HEAD
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import com.example.ada.data.model.CrearSupervisadoRequest
 import com.example.ada.data.remote.RetrofitClient
 import kotlinx.coroutines.launch
+=======
+import java.util.Calendar
+import java.util.TimeZone
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
+import android.graphics.Bitmap
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
+import coil.compose.rememberAsyncImagePainter
+>>>>>>> b4bf3a2804dca08b7a378eee923932d9cc593dc9
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegistroInfanteScreen(
-    onEnviarClick: () -> Unit
+    onCancelarClick: () -> Unit,
+    onRegistrarseClick: () -> Unit
 ) {
     var nombre by remember { mutableStateOf("") }
     var apellidoPaterno by remember { mutableStateOf("") }
     var apellidoMaterno by remember { mutableStateOf("") }
+    var curp by remember { mutableStateOf("") }
+    val curpRegex = Regex(
+        "^[A-Z][AEIOU][A-Z]{2}\\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\\d|3[01])[HM](AS|BC|BS|CC|CL|CM|CS|CH|DF|DG|GT|GR|HG|JC|MC|MN|MS|NT|NL|OC|PL|QT|QR|SP|SL|SR|TC|TS|TL|VZ|YN|ZS|NE)[B-DF-HJ-NP-TV-Z]{3}[A-Z0-9]\\d$"
+    )
+    val infiniteTransition = rememberInfiniteTransition(label = "gradient")
 
-    var showDatePicker by remember { mutableStateOf(false) }
-    var fechaSeleccionada by remember { mutableStateOf<Long?>(null) }
+    val curpValida = curp.isBlank() || curpRegex.matches(curp)
 
+<<<<<<< HEAD
     val coroutineScope = rememberCoroutineScope()
     var isLoading by remember { mutableStateOf(false) }
 
@@ -64,48 +98,47 @@ fun RegistroInfanteScreen(
                 !isLoading
 
     val infiniteTransition = rememberInfiniteTransition(label = "infanteBackground")
+=======
+>>>>>>> b4bf3a2804dca08b7a378eee923932d9cc593dc9
 
     val offset by infiniteTransition.animateFloat(
         initialValue = 0f,
-        targetValue = 1000f,
+        targetValue = 900f,
         animationSpec = infiniteRepeatable(
-            animation = tween(8000, easing = LinearEasing),
+            animation = tween(
+                durationMillis = 8500,
+                easing = LinearEasing
+            ),
             repeatMode = RepeatMode.Reverse
         ),
-        label = "offset"
+        label = "softGradientOffset"
     )
 
-    val background = Brush.linearGradient(
-        colors = listOf(
-            Color(0xFFD9F99D),
-            Color(0xFFBBF7D0),
-            Color(0xFFA7F3D0)
-        ),
-        start = Offset(0f, offset * 0.35f),
-        end = Offset(offset * 0.65f, 1000f)
-    )
+    val baseColor = Color(0xFF0C0521)
 
     val softGlow = Brush.radialGradient(
         colors = listOf(
-            Color(0xFF86EFAC).copy(alpha = 0.30f),
+            Color(0xFF7B2CBF).copy(alpha = 0.45f),
+            Color(0xFF3C096C).copy(alpha = 0.14f),
             Color.Transparent
         ),
-        center = Offset(offset, offset * 0.55f),
-        radius = 850f
+        center = Offset(offset, offset * 0.75f),
+        radius = 950f
     )
-    val blueGlow = Brush.radialGradient(
+
+    val secondaryGlow = Brush.radialGradient(
         colors = listOf(
-            Color(0xFF7DD3FC).copy(alpha = 0.22f),
+            Color(0xFFC77DFF).copy(alpha = 0.25f),
             Color.Transparent
         ),
-        center = Offset(1100f - offset, 900f - offset * 0.35f),
-        radius = 800f
+        center = Offset(1200f - offset, 1200f - offset),
+        radius = 850f
     )
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(background)
+            .background(baseColor)
     ) {
         Box(
             modifier = Modifier
@@ -116,101 +149,172 @@ fun RegistroInfanteScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(blueGlow)
+                .background(secondaryGlow)
         )
+        var showDatePicker by remember { mutableStateOf(false) }
+        var fechaSeleccionada by remember { mutableStateOf<Long?>(null) }
+
+        val formatter = remember {
+            SimpleDateFormat("yyyy/MM/dd", Locale.getDefault())
+        }
+
+        val fechaTexto = fechaSeleccionada?.let {
+            formatter.format(Date(it))
+        } ?: ""
+
+        val camposLlenos =
+            nombre.isNotBlank() &&
+                    apellidoPaterno.isNotBlank() &&
+                    apellidoMaterno.isNotBlank() &&
+                    fechaSeleccionada != null &&
+                    curp.isNotBlank()
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 24.dp),
+                .padding(horizontal = 30.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(48.dp))
+            if (showDatePicker) {
 
-            Text(
-                text = "Vamos a crear tu perfil",
-                color = Color(0xFF14532D),
-                style = MaterialTheme.typography.headlineMedium,
-                textAlign = TextAlign.Center
+                val datePickerState = rememberDatePickerState()
+
+                DatePickerDialog(
+                    onDismissRequest = { showDatePicker = false },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            val selectedDate = datePickerState.selectedDateMillis
+
+                            if (selectedDate != null) {
+                                fechaSeleccionada = selectedDate
+                                showDatePicker = false
+                            }
+                        }) {
+                            Text("Aceptar", color = Color(0xFFC77DFF))
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = {
+                            showDatePicker = false
+                        }) {
+                            Text("Cancelar", color = Color(0xFFB8A9FF))
+                        }
+                    },
+                    colors = DatePickerDefaults.colors(
+                        containerColor = Color(0xFF0C0521)
+                    )
+                ) {
+                    DatePicker(
+                        state = datePickerState,
+                        colors = DatePickerDefaults.colors(
+                            containerColor = Color(0xFF0C0521),
+
+                            titleContentColor = Color.White,
+                            headlineContentColor = Color(0xFFC77DFF),
+
+                            weekdayContentColor = Color(0xFFB8A9FF),
+                            subheadContentColor = Color(0xFFB8A9FF),
+
+                            yearContentColor = Color.White,
+                            currentYearContentColor = Color(0xFFC77DFF),
+
+                            selectedYearContentColor = Color.White,
+                            selectedYearContainerColor = Color(0xFF7B2CBF),
+
+                            dayContentColor = Color.White,
+                            disabledDayContentColor = Color(0xFF555555),
+
+                            selectedDayContentColor = Color.White,
+                            selectedDayContainerColor = Color(0xFF9D4EDD),
+
+                            todayContentColor = Color(0xFFC77DFF),
+                            todayDateBorderColor = Color(0xFFC77DFF)
+                        )
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(50.dp))
+
+            Image(
+                painter = painterResource(id = R.drawable.logo_ada),
+                contentDescription = "Logo Ada",
+                modifier = Modifier.size(150.dp)
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(4.dp))
 
             Text(
-                text = "Solo te tomará un momento",
-                color = Color(0xFF166534),
-                style = MaterialTheme.typography.bodyLarge,
-                textAlign = TextAlign.Center
+                text = "Registro Infante",
+                color = Color.White,
+                style = MaterialTheme.typography.headlineMedium
             )
 
-            Spacer(modifier = Modifier.height(30.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-            YouthInput(
-                label = "Nombre",
+            RegistroLabel2("Nombre Completo:")
+            PremiumTextInput(
                 value = nombre,
-                placeholder = "Escribe tu nombre",
-                onChange = { nombre = it }
+                onValueChange = { nombre = it },
+                placeholder = "",
+                isError = false,
+                shakeOffset = 0f
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
-            YouthInput(
-                label = "Apellido paterno",
+            RegistroLabel2("Apellido Paterno")
+            PremiumTextInput(
                 value = apellidoPaterno,
-                placeholder = "Escribe tu apellido",
-                onChange = { apellidoPaterno = it }
+                onValueChange = { apellidoPaterno = it },
+                placeholder = "",
+                isError = false,
+                shakeOffset = 0f
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
-            YouthInput(
-                label = "Apellido materno",
+            RegistroLabel2("Apellido Materno")
+            PremiumTextInput(
                 value = apellidoMaterno,
-                placeholder = "Escribe tu apellido",
-                onChange = { apellidoMaterno = it }
+                onValueChange = { apellidoMaterno = it },
+                placeholder = "",
+                isError = false,
+                shakeOffset = 0f
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
-            Text(
-                text = "Fecha de nacimiento",
-                color = Color(0xFF14532D),
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
+            RegistroLabel2("Fecha de Nacimiento:")
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(60.dp)
-                    .shadow(
-                        elevation = 8.dp,
-                        shape = RoundedCornerShape(26.dp),
-                        ambientColor = Color(0xFF86EFAC),
-                        spotColor = Color(0xFF4ADE80)
+                    .height(58.dp)
+                    .background(
+                        color = Color(0xFF14082E),
+                        shape = RoundedCornerShape(18.dp)
                     )
-                    .background(Color.White, RoundedCornerShape(26.dp))
                     .border(
                         width = 2.dp,
-                        color = Color(0xFF86EFAC),
-                        shape = RoundedCornerShape(26.dp)
+                        color = Color(0xFF7B2CBF),
+                        shape = RoundedCornerShape(18.dp)
                     )
-                    .clickable { showDatePicker = true }
-                    .padding(horizontal = 20.dp),
+                    .clickable {
+                        showDatePicker = true
+                    }
+                    .padding(horizontal = 18.dp),
                 contentAlignment = Alignment.CenterStart
             ) {
                 Text(
-                    text = if (fechaTexto.isEmpty()) "Selecciona tu fecha" else fechaTexto,
-                    color = if (fechaTexto.isEmpty()) Color(0xFF65A30D) else Color(0xFF14532D),
+                    text = if (fechaTexto.isEmpty()) "YYYY/MM/DD" else fechaTexto,
+                    color = if (fechaTexto.isEmpty()) Color(0xFFB8A9FF) else Color.White,
                     style = MaterialTheme.typography.bodyLarge
                 )
             }
 
-            Spacer(modifier = Modifier.height(38.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
+<<<<<<< HEAD
             YouthButton(
                 // Cambia el texto para dar feedback visual
                 text = if (isLoading) "Guardando..." else "Crear perfil",
@@ -242,209 +346,121 @@ fun RegistroInfanteScreen(
                         }
                     }
                 }
+=======
+            RegistroLabel("CURP (opcional):")
+
+            PremiumTextInput(
+                value = curp,
+                onValueChange = {
+                    curp = it.uppercase().take(18)
+                },
+                placeholder = "Ej: ABCD010203HDFXXX09",
+                isError = curp.isNotEmpty() && !curpRegex.matches(curp),
+                shakeOffset = 0f
+>>>>>>> b4bf3a2804dca08b7a378eee923932d9cc593dc9
             )
 
-            Spacer(modifier = Modifier.height(45.dp))
-        }
+            if (curp.isNotEmpty() && !curpRegex.matches(curp)) {
+                Spacer(modifier = Modifier.height(6.dp))
 
-        if (showDatePicker) {
-            val datePickerState = rememberDatePickerState()
-
-            DatePickerDialog(
-                onDismissRequest = { showDatePicker = false },
-                confirmButton = {
-                    TextButton(
-                        onClick = {
-                            fechaSeleccionada = datePickerState.selectedDateMillis
-                            showDatePicker = false
-                        }
-                    ) {
-                        Text("Aceptar", color = Color(0xFF16A34A))
-                    }
-                },
-                dismissButton = {
-                    TextButton(
-                        onClick = { showDatePicker = false }
-                    ) {
-                        Text("Cancelar", color = Color(0xFF14532D))
-                    }
-                },
-                colors = DatePickerDefaults.colors(
-                    containerColor = Color(0xFFF0FDF4)
-                )
-            ) {
-                DatePicker(
-                    state = datePickerState,
-                    colors = DatePickerDefaults.colors(
-                        containerColor = Color(0xFFF0FDF4),
-                        titleContentColor = Color(0xFF14532D),
-                        headlineContentColor = Color(0xFF16A34A),
-                        weekdayContentColor = Color(0xFF166534),
-                        subheadContentColor = Color(0xFF166534),
-                        yearContentColor = Color(0xFF14532D),
-                        selectedYearContentColor = Color.White,
-                        selectedYearContainerColor = Color(0xFF22C55E),
-                        dayContentColor = Color(0xFF14532D),
-                        selectedDayContentColor = Color.White,
-                        selectedDayContainerColor = Color(0xFF22C55E),
-                        todayContentColor = Color(0xFF16A34A),
-                        todayDateBorderColor = Color(0xFF16A34A)
-                    )
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun YouthInput(
-    label: String,
-    value: String,
-    placeholder: String,
-    isError: Boolean = false,
-    onChange: (String) -> Unit
-) {
-    val interactionSource = remember { MutableInteractionSource() }
-    val isFocused by interactionSource.collectIsFocusedAsState()
-
-    val borderColor by animateColorAsState(
-        targetValue = when {
-            isError -> Color(0xFFFF4D6D)
-            isFocused -> Color(0xFF22C55E) // verde activo
-            else -> Color(0xFF86EFAC)      // verde suave
-        },
-        label = "youthInputBorder"
-    )
-
-    val backgroundColor by animateColorAsState(
-        targetValue = if (isFocused)
-            Color(0xFFF0FDF4) // verde MUY suave (tipo highlight)
-        else
-            Color.White,
-        label = "youthInputBackground"
-    )
-
-    val glow by animateFloatAsState(
-        targetValue = if (isFocused) 18f else 8f,
-    )
-
-    Column(
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Text(
-            text = label,
-            color = Color(0xFF14532D),
-            style = MaterialTheme.typography.titleMedium
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(58.dp)
-                .shadow(
-                    elevation = glow.dp,
-                    shape = RoundedCornerShape(26.dp),
-                    ambientColor = borderColor,
-                    spotColor = borderColor
-                )
-                .background(backgroundColor, RoundedCornerShape(26.dp))                .border(
-                    width = 2.dp,
-                    color = borderColor,
-                    shape = RoundedCornerShape(26.dp)
-                )
-                .scale(if (isFocused) 1.01f else 1f)
-                .padding(horizontal = 18.dp),
-
-            contentAlignment = Alignment.CenterStart
-        ) {
-            BasicTextField(
-                value = value,
-                onValueChange = onChange,
-                interactionSource = interactionSource,
-                singleLine = true,
-                textStyle = MaterialTheme.typography.bodyLarge.copy(
-                    color = Color(0xFF14532D)
-                ),
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            if (value.isEmpty()) {
                 Text(
-                    text = placeholder,
-                    color = Color(0xFF65A30D),
+                    text = "CURP no válida",
+                    color = Color(0xFFFF4D6D),
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+
+            Spacer(modifier = Modifier.height(38.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(14.dp)
+            ) {
+                RegistroActionButton2(
+                    text = "Cancelar",
+                    modifier = Modifier.weight(1f),
+                    onClick = onCancelarClick
+                )
+
+                RegistroActionButton2(
+                    text = "Registrarse",
+                    modifier = Modifier.weight(1f),
+                    enabled = camposLlenos  && curpValida,                    onClick = {
+
+                        onRegistrarseClick()
+                    }
+                )
+            }
+
+            Spacer(modifier = Modifier.height(40.dp))
         }
     }
 }
+
+
 @Composable
-fun YouthButton(
+fun RegistroLabel2(
+    text: String
+) {
+    Text(
+        text = text,
+        color = Color.White,
+        style = MaterialTheme.typography.titleMedium,
+        modifier = Modifier.fillMaxWidth()
+    )
+}
+@Composable
+fun RegistroActionButton2(
     text: String,
-    enabled: Boolean,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     onClick: () -> Unit
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
 
     val scale by animateFloatAsState(
-        targetValue = if (isPressed && enabled) 0.94f else 1f,
+        targetValue = if (isPressed && enabled) 0.96f else 1f,
         animationSpec = spring(),
-        label = "youthButtonScale"
+        label = "registroButtonScale"
     )
-
-    val elevation by animateFloatAsState(
-        targetValue = if (isPressed) 12f else 26f,
-        label = "buttonElevation"
-    )
-
-    val brush = if (enabled) {
-        Brush.linearGradient(
-            colors = listOf(
-                Color(0xFF4ADE80), // verde claro (inicio)
-                Color(0xFF22C55E), // verde principal
-                Color(0xFF15803D)  // verde profundo (sombra)
-            ),
-            start = Offset(0f, 0f),
-            end = Offset(600f, 600f)
-        )
-    } else {
-        Brush.linearGradient(
-            colors = listOf(
-                Color(0xFF94A3B8),
-                Color(0xFF64748B)
-            )
-        )
-    }
 
     Box(
-        modifier = Modifier
-            .fillMaxWidth(0.85f)
-            .height(66.dp)
+        modifier = modifier
+            .height(56.dp)
             .scale(scale)
             .shadow(
-                elevation = elevation.dp,
-                shape = RoundedCornerShape(32.dp),
-                ambientColor = Color(0xFF22C55E),
-                spotColor = Color(0xFF0EA5E9)
+                elevation = if (isPressed) 12.dp else 22.dp,
+                shape = RoundedCornerShape(16.dp),
+                ambientColor = Color(0xFF7B2CBF),
+                spotColor = Color(0xFF9D4EDD)
             )
             .background(
-                brush = brush,
-                shape = RoundedCornerShape(32.dp)
-            )
-            .border(
-                width = 1.5.dp,
-                color = Color.White.copy(alpha = 0.25f),
-                shape = RoundedCornerShape(32.dp)
+                brush = if (enabled) {
+                    Brush.linearGradient(
+                        colors = listOf(
+                            Color(0xFFC77DFF),
+                            Color(0xFF9D4EDD),
+                            Color(0xFF7B2CBF),
+                            Color(0xFF5A189A)
+                        )
+                    )
+                } else {
+                    Brush.linearGradient(
+                        colors = listOf(
+                            Color(0xFF2A2A2A),
+                            Color(0xFF1F1F1F)
+                        )
+                    )
+                },
+                shape = RoundedCornerShape(16.dp)
             )
             .clickable(
                 interactionSource = interactionSource,
-                indication = ripple(
-                    bounded = true,
-                    color = Color.White.copy(alpha = 0.35f)
-                ),
+                indication = null,
                 enabled = enabled
             ) {
                 onClick()
@@ -453,9 +469,10 @@ fun YouthButton(
     ) {
         Text(
             text = text,
-            color = if (enabled) Color.White else Color(0xFFE2E8F0),
+            color = if (enabled) Color.White else Color.Gray,
             style = MaterialTheme.typography.labelLarge.copy(
-                letterSpacing = 1.2.sp
+                textAlign = TextAlign.Center,
+                letterSpacing = 1.sp
             )
         )
     }
