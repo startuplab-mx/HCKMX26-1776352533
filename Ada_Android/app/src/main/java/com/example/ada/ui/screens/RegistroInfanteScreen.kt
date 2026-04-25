@@ -34,18 +34,6 @@ import androidx.compose.runtime.remember
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import java.util.Calendar
-import java.util.TimeZone
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.runtime.rememberCoroutineScope
-import kotlinx.coroutines.launch
-import android.graphics.Bitmap
-import android.net.Uri
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.layout.ContentScale
-import coil.compose.rememberAsyncImagePainter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,7 +51,6 @@ fun RegistroInfanteScreen(
     val infiniteTransition = rememberInfiniteTransition(label = "gradient")
 
     val curpValida = curp.isBlank() || curpRegex.matches(curp)
-
 
     val offset by infiniteTransition.animateFloat(
         initialValue = 0f,
@@ -278,17 +265,7 @@ fun RegistroInfanteScreen(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            RegistroLabel("CURP (opcional):")
 
-            PremiumTextInput(
-                value = curp,
-                onValueChange = {
-                    curp = it.uppercase().take(18)
-                },
-                placeholder = "Ej: ABCD010203HDFXXX09",
-                isError = curp.isNotEmpty() && !curpRegex.matches(curp),
-                shakeOffset = 0f
-            )
 
             if (curp.isNotEmpty() && !curpRegex.matches(curp)) {
                 Spacer(modifier = Modifier.height(6.dp))

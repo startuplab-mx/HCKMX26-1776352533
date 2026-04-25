@@ -44,8 +44,6 @@ fun AppNavigation() {
             )
         }
 
-
-
         composable(AppScreen.ResultadoInfante.route) {
             ResultadoInfanteScreen(
                 onBackClick = {
