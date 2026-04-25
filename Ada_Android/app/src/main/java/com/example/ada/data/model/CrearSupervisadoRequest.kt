@@ -4,6 +4,6 @@ data class CrearSupervisadoRequest (
     val nombre: String,
     val appat: String,
     val apmat: String,
-    val fecha_nacimiento: Long,
+    val fecha_nacimiento: String,
     val curp: String
     )

@@ -30,7 +30,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import com.example.ada.data.model.CrearSupervisadoRequest
-import com.example.ada.data.remote.ApiService
 import com.example.ada.data.remote.RetrofitClient
 import kotlinx.coroutines.launch
 
@@ -50,7 +49,7 @@ fun RegistroInfanteScreen(
     var isLoading by remember { mutableStateOf(false) }
 
     val formatter = remember {
-        SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        SimpleDateFormat("yyyy/MM/dd", Locale.getDefault())
     }
 
     val fechaTexto = fechaSeleccionada?.let {
@@ -225,7 +224,7 @@ fun RegistroInfanteScreen(
                                 nombre = nombre,
                                 appat = apellidoPaterno,
                                 apmat = apellidoMaterno,
-                                fecha_nacimiento = fechaSeleccionada ?: 0L,
+                                fecha_nacimiento = fechaTexto,
                                 curp = ""
                             )
 
