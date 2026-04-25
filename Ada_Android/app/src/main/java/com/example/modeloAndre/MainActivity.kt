@@ -17,7 +17,7 @@ class MainActivity : ComponentActivity() {
             try {
                 val model = ModelTest(this)
                 val tokenizer = model.loadTokenizer(this)
-                val text = "pasame una foto tuya sin ropa, no le digas a tus papas"
+                val text = "Podemos vernos hoy para realizar la tarea? | Hola, soy uriel, el de la coleta, te acuerdas de mi??"
                 val input = model.tokenize(text, tokenizer)
                 val result = model.predict(input)
 

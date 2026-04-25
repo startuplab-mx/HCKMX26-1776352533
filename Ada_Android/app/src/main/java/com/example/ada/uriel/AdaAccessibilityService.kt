@@ -5,15 +5,14 @@ import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import android.graphics.Rect
 import android.util.Log
-
 data class ChatMessage(val text: String, val role: String)
 
 class AdaAccessibilityService : AccessibilityService() {
 
-    private val messageProcessor = MessageProcessor(AdaModelManager())
+    private val messageProcessor = MessageProcesor(AdaModelManager())
     private val whatsappExtractor = WhatsAppExtractor()
     private val instagramExtractor = InstagramExtractor()
-
+    private val tiktokExtractor=TiktokExtractor()
 
     private var currentChatSession: String? = null
     private var needsSessionUpdate: Boolean = true
@@ -22,17 +21,38 @@ class AdaAccessibilityService : AccessibilityService() {
         val packageName = event?.packageName?.toString() ?: return
         val eventType = event.eventType
 
+        /*
+        fun printNodeTree(node: AccessibilityNodeInfo?, depth: Int = 0) {
+            if (node == null) return
 
+            val indent = " ".repeat(depth * 2)
+            val className = node.className ?: "null"
+            val text = node.text ?: "null"
+            val viewId = node.viewIdResourceName ?: "null"
 
+            Log.d("ADA_TREE_DUMP", "$indent- Class: $className | Text: $text | ID: $viewId")
+
+            for (i in 0 until node.childCount) {
+                val child = node.getChild(i)
+                printNodeTree(child, depth + 1)
+                child?.recycle()
+            }
+        }
+        */
         val targetApps = listOf(
             "com.whatsapp",
             "com.instagram.android",
-            "com.facebook.orca",
             "com.zhiliaoapp.musically"
         )
 
         if (targetApps.contains(packageName)) {
+
             val rootNode = rootInActiveWindow ?: return
+            /*
+            if (packageName == "com.whatsapp") {
+                printNodeTree(rootNode)
+            }
+            */
 
             if (eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
                 needsSessionUpdate = true
@@ -68,6 +88,7 @@ class AdaAccessibilityService : AccessibilityService() {
                     val extractedMessages = when (packageName) {
                         "com.whatsapp" -> whatsappExtractor.extractMessages(rootNode, screenWidth, screenHeight, currentChatSession!!)
                         "com.instagram.android" -> instagramExtractor.extractMessages(rootNode, screenWidth, screenHeight, currentChatSession!!)
+                        "com.zhiliaoapp.musically" -> tiktokExtractor.extractMessages(rootNode, screenWidth, screenHeight, currentChatSession!!)
                         else -> emptyList()
                     }
 

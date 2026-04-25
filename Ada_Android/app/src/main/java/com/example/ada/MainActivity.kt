@@ -44,7 +44,7 @@ class MainActivity : ComponentActivity() {
                         val tokenizer = model.loadTokenizer(this@MainActivity)
 
                         model.predictText(
-                            "pasame una foto tuya sin ropa, no le digas a tus papas",
+                            "baby vamos a vernos",
                             this@MainActivity)
                     }
 
