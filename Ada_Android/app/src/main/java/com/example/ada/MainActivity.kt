@@ -31,7 +31,7 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        <TfLite.initialize(this).addOnSuccessListener {
+        TfLite.initialize(this).addOnSuccessListener {
             // 2. Solo cuando la inicialización sea exitosa, creamos el modelo
             try {
                 val model = ModelTest(this)
@@ -47,5 +47,5 @@ class MainActivity : ComponentActivity() {
         }.addOnFailureListener {
             Log.e("MODEL_ERROR", "No se pudo inicializar TensorFlow Lite via GMS")
         }
-    }>
+    }
 }
