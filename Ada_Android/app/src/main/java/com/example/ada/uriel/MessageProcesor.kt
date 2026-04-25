@@ -5,7 +5,7 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 
-class MessageProcessor(private val modelManager: AdaModelManager) {
+class MessageProcesor(private val modelManager: AdaModelManager) {
 
     private val handler = Handler(Looper.getMainLooper())
     private var debounceRunnable: Runnable? = null
