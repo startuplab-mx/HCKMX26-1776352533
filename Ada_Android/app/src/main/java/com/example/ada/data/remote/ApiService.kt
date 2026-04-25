@@ -1,18 +1,38 @@
 package com.example.ada.data.remote
 
+import com.example.ada.data.model.CrearEquipoRequest
+import com.example.ada.data.model.CrearEquipoResponse
 import com.example.ada.data.model.CrearSupervisadoRequest
 import com.example.ada.data.model.CrearSupervisadoResponse
 import com.example.ada.data.model.CrearSupervisorRequest
 import com.example.ada.data.model.CrearSupervisorResponse
 import com.example.ada.data.model.LoginRequest
 import com.example.ada.data.model.LoginResponse
+import com.example.ada.data.model.consultarEquipos
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Path
 
 interface ApiService {
 
     //SUPERVISADOS
+
+
+    //EQUIPO
+    //REGISTRO
+    @POST("supervisado/equipo/crear/{id}")
+    suspend fun crearEquipo(
+        @Path("id") id: String,
+        @Body request: CrearEquipoRequest
+    ): Response<CrearEquipoResponse>
+
+    //CONSULTAR EQUIPO
+    @GET("supervisado/equipo/{id}")
+    suspend fun consultarEquipo(
+        @Path("id") id: String
+    ): Response<consultarEquipos>
 
     @POST("supervisor/supervisado/registrado/")
     suspend fun crearSupervisado(

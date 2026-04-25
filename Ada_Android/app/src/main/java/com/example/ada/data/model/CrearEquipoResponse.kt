@@ -1,5 +1,5 @@
 package com.example.ada.data.model
 
-data class CrearSupervisorResponse(
+data class CrearEquipoResponse (
     val message: String
 )
