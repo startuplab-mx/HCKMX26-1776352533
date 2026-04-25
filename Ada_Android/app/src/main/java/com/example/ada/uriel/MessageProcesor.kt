@@ -78,10 +78,12 @@ class MessageProcesor(private val modelManager: AdaModelManager) {
         while (contextWindow.size > windowLimit) {
             contextWindow.removeFirst()
         }
+        //variable a conectar
+        val formattedContext = contextWindow.joinToString(separator = " ") {
 
-        val formattedContext = contextWindow.joinToString(separator = "\n") {
             "[${it.role}]: ${it.text}"
         }
+
 
         Log.d("ADA_LOG", "Ventana de contexto enviada a IA:\n$formattedContext")
 
