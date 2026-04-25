@@ -84,7 +84,6 @@ class MessageProcesor(private val modelManager: AdaModelManager) {
         }
 
         Log.d("ADA_LOG", "Ventana de contexto enviada a IA:\n$formattedContext")
-
         modelManager.analyzeContext(formattedContext)
     }
 
