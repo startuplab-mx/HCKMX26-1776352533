@@ -62,8 +62,7 @@ fun RegistroInfanteScreen(
     )
     val infiniteTransition = rememberInfiniteTransition(label = "gradient")
 
-    val curpValida = curpRegex.matches(curp)
-
+    val curpValida = curp.isBlank() || curpRegex.matches(curp)
 
 
     val offset by infiniteTransition.animateFloat(
@@ -120,7 +119,7 @@ fun RegistroInfanteScreen(
         var fechaSeleccionada by remember { mutableStateOf<Long?>(null) }
 
         val formatter = remember {
-            SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+            SimpleDateFormat("yyyy/MM/dd", Locale.getDefault())
         }
 
         val fechaTexto = fechaSeleccionada?.let {
@@ -271,7 +270,7 @@ fun RegistroInfanteScreen(
                 contentAlignment = Alignment.CenterStart
             ) {
                 Text(
-                    text = if (fechaTexto.isEmpty()) "DD/MM/YYYY" else fechaTexto,
+                    text = if (fechaTexto.isEmpty()) "YYYY/MM/DD" else fechaTexto,
                     color = if (fechaTexto.isEmpty()) Color(0xFFB8A9FF) else Color.White,
                     style = MaterialTheme.typography.bodyLarge
                 )
@@ -279,25 +278,25 @@ fun RegistroInfanteScreen(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            RegistroLabel2("CURP:")
+            RegistroLabel("CURP (opcional):")
+
             PremiumTextInput(
                 value = curp,
                 onValueChange = {
                     curp = it.uppercase().take(18)
                 },
-                placeholder = "18 caracteres",
-                isError = curp.isNotEmpty() && !curpValida,
+                placeholder = "Ej: ABCD010203HDFXXX09",
+                isError = curp.isNotEmpty() && !curpRegex.matches(curp),
                 shakeOffset = 0f
             )
 
-            if (curp.isNotEmpty() && !curpValida) {
+            if (curp.isNotEmpty() && !curpRegex.matches(curp)) {
                 Spacer(modifier = Modifier.height(6.dp))
 
                 Text(
-                    text = "CURP no válida. Debe tener 18 caracteres y formato oficial.",
+                    text = "CURP no válida",
                     color = Color(0xFFFF4D6D),
-                    style = MaterialTheme.typography.bodyMedium,
-                    textAlign = TextAlign.Center
+                    style = MaterialTheme.typography.bodyMedium
                 )
             }
 

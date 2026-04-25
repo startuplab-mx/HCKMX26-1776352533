@@ -128,7 +128,7 @@ fun RegistroTutorScreen(
         var fechaSeleccionada by remember { mutableStateOf<Long?>(null) }
 
         val formatter = remember {
-            SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+            SimpleDateFormat("yyyy/MM/dd", Locale.getDefault())
         }
 
         val fechaTexto = fechaSeleccionada?.let {
@@ -312,7 +312,7 @@ fun RegistroTutorScreen(
                 contentAlignment = Alignment.CenterStart
             ) {
                 Text(
-                    text = if (fechaTexto.isEmpty()) "DD/MM/YYYY" else fechaTexto,
+                    text = if (fechaTexto.isEmpty()) "YYYY/MM/DD" else fechaTexto,
                     color = if (fechaTexto.isEmpty()) Color(0xFFB8A9FF) else Color.White,
                     style = MaterialTheme.typography.bodyLarge
                 )
