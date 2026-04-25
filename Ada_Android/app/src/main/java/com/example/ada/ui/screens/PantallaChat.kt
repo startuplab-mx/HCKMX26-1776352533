@@ -33,9 +33,13 @@ import com.example.ada_1.data.ChatNinoUI
 @Composable
 fun PantallaChat(navController: NavController) {
     var mostrarMenu by remember { mutableStateOf(false) }
+    var modoDesvincular by remember { mutableStateOf(false) }
+    val ninosSeleccionados = remember { mutableStateListOf<String>() }
+    var mostrarConfirmacion by remember { mutableStateOf(false) }
+
     //pantallas
     val tieneNinosRegistrados = true
-
+    
     val infiniteTransition = rememberInfiniteTransition(label = "gradient")
     val offset by infiniteTransition.animateFloat(
         initialValue = 0f,
@@ -49,7 +53,7 @@ fun PantallaChat(navController: NavController) {
         ),
         label = "softGradientOffset"
     )
-
+//
     val baseColor = Color(0xFF0C0521)
 
     val softGlow = Brush.radialGradient(
@@ -74,8 +78,8 @@ fun PantallaChat(navController: NavController) {
     val listaNinos = remember {
         mutableStateListOf<ChatNinoUI>().apply {
             if (tieneNinosRegistrados) {
-                add(ChatNinoUI("1", "Fernanda", "ada: último mensaje", "12:41", R.drawable.logo_ig))
-                add(ChatNinoUI("2", "Juliana", "ada: último mensaje", "12:41", R.drawable.logo_wts))
+                add(ChatNinoUI("1", "Fernanda", "Aplicacion con riesgo detectado: Instagram", "12:41", R.drawable.logo_ig))
+                add(ChatNinoUI("2", "Juliana", "Aplicacion con riesgo detectado: WhatsApp", "12:41", R.drawable.logo_wts))
             }
         }
     }
@@ -95,44 +99,75 @@ fun PantallaChat(navController: NavController) {
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    if (modoDesvincular) {
+                        IconButton(onClick = { 
+                            modoDesvincular = false
+                            ninosSeleccionados.clear()
+                        }) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.back_arrow),
+                                contentDescription = "cancelar",
+                                tint = Color.White
+                            )
+                        }
+                    }
+
                     Image(
                         painter = painterResource(id = R.drawable.logo_ada),
                         contentDescription = "logo ada",
                         modifier = Modifier.height(60.dp)
                     )
 
-                    Box {
-                        IconButton(onClick = { mostrarMenu = true }) {
+                    if (modoDesvincular) {
+                        IconButton(
+                            onClick = { 
+                                if (ninosSeleccionados.isNotEmpty()) {
+                                    mostrarConfirmacion = true
+                                }
+                            },
+                            enabled = ninosSeleccionados.isNotEmpty()
+                        ) {
                             Icon(
-                                painter = painterResource(id = R.drawable.three_dots),
-                                contentDescription = "opciones",
-                                modifier = Modifier.height(20.dp),
-                                tint = Color.White
+                                painter = painterResource(id = R.drawable.desvincular),
+                                contentDescription = "desvincular",
+                                tint = if (ninosSeleccionados.isNotEmpty()) Color.White else Color.Gray,
+                                modifier = Modifier.size(30.dp)
                             )
                         }
-
-                        DropdownMenu(
-                            expanded = mostrarMenu,
-                            onDismissRequest = { mostrarMenu = false },
-                            modifier = Modifier.background(Color.White)
-                        ) {
-                            if (listaNinos.isNotEmpty()) {
-                                DropdownMenuItem(
-                                    text = { Text("Desvincular niños", color = Color.Black) },
-                                    onClick = {
-                                        mostrarMenu = false
-                                        navController.navigate("pantalla_desvincular")
-                                    }
+                    } else {
+                        Box {
+                            IconButton(onClick = { mostrarMenu = true }) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.three_dots),
+                                    contentDescription = "opciones",
+                                    modifier = Modifier.height(20.dp),
+                                    tint = Color.White
                                 )
                             }
 
-                            DropdownMenuItem(
-                                text = { Text("Cerrar Sesion", color = Color.Black) },
-                                onClick = {
-                                    mostrarMenu = false
-                                    navController.navigate("pantalla_principal")
+                            DropdownMenu(
+                                expanded = mostrarMenu,
+                                onDismissRequest = { mostrarMenu = false },
+                                modifier = Modifier.background(Color.White)
+                            ) {
+                                if (listaNinos.isNotEmpty()) {
+                                    DropdownMenuItem(
+                                        text = { Text("Desvincular niños", color = Color.Black) },
+                                        onClick = {
+                                            mostrarMenu = false
+                                            modoDesvincular = true
+                                        }
+                                    )
                                 }
-                            )
+
+                                DropdownMenuItem(
+                                    text = { Text("Cerrar Sesion", color = Color.Black) },
+                                    onClick = {
+                                        mostrarMenu = false
+                                        navController.navigate("pantalla_principal")
+                                    }
+                                )
+                            }
                         }
                     }
                 }
@@ -153,7 +188,7 @@ fun PantallaChat(navController: NavController) {
             }
         },
         floatingActionButton = {
-            if (listaNinos.isNotEmpty()) {
+            if (listaNinos.isNotEmpty() && !modoDesvincular) {
                 FloatingActionButton(
                     onClick = { navController.navigate("pantalla_codigo") },
                     containerColor = Color(0xFFCE8820),
@@ -207,12 +242,54 @@ fun PantallaChat(navController: NavController) {
                     contentPadding = PaddingValues(top = 16.dp)
                 ) {
                     items(listaNinos) { nino ->
-                        TarjetaChatNino(nino) {
-                            navController.navigate("pantalla_mensajes/${nino.nombreCompleto}")
-                        }
+                        val seleccionado = ninosSeleccionados.contains(nino.id)
+                        TarjetaChatNino(
+                            nino = nino,
+                            modoDesvincular = modoDesvincular,
+                            seleccionado = seleccionado,
+                            onClick = {
+                                if (modoDesvincular) {
+                                    if (seleccionado) {
+                                        ninosSeleccionados.remove(nino.id)
+                                    } else {
+                                        ninosSeleccionados.add(nino.id)
+                                    }
+                                } else {
+                                    navController.navigate("pantalla_mensajes/${nino.nombreCompleto}")
+                                }
+                            }
+                        )
                     }
                 }
             }
+        }
+
+        if (mostrarConfirmacion) {
+            AlertDialog(
+                onDismissRequest = { mostrarConfirmacion = false },
+                title = { Text("Confirmación", color = Color.Black) },
+                text = { Text("¿Está seguro que desea desvincular a los niños seleccionados?", color = Color.Black) },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            listaNinos.removeAll { ninosSeleccionados.contains(it.id) }
+                            ninosSeleccionados.clear()
+                            modoDesvincular = false
+                            mostrarConfirmacion = false
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6219D7))
+                    ) {
+                        Text("ACEPTAR")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { mostrarConfirmacion = false }) {
+                        Text("CANCELAR", color = Color.Gray)
+                    }
+                },
+                containerColor = Color.White,
+                shape = RoundedCornerShape(16.dp)
+            )
         }
     }
 }
@@ -234,7 +311,12 @@ fun BotonFiltroApp(nombre: String) {
 }
 
 @Composable
-fun TarjetaChatNino(nino: ChatNinoUI, onClick: () -> Unit) {
+fun TarjetaChatNino(
+    nino: ChatNinoUI, 
+    modoDesvincular: Boolean = false,
+    seleccionado: Boolean = false,
+    onClick: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -269,11 +351,23 @@ fun TarjetaChatNino(nino: ChatNinoUI, onClick: () -> Unit) {
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp
                     )
-                    Text(
-                        text = nino.hora,
-                        color = Color.Gray,
-                        fontSize = 14.sp
-                    )
+                    
+                    if (modoDesvincular) {
+                        Checkbox(
+                            checked = seleccionado,
+                            onCheckedChange = null,
+                            colors = CheckboxDefaults.colors(
+                                checkedColor = Color(0xFFA762DD),
+                                uncheckedColor = Color.White
+                            )
+                        )
+                    } else {
+                        Text(
+                            text = nino.hora,
+                            color = Color.Gray,
+                            fontSize = 14.sp
+                        )
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(2.dp))
