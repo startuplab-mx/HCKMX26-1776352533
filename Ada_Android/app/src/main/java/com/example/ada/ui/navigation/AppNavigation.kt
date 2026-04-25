@@ -88,6 +88,23 @@ fun AppNavigation() {
                 }
             )
         }
+    composable("pantalla_chat") {
+            PantallaChat(navController)
+        }
 
+        composable("pantalla_codigo") {
+            PantallaCodigo(navController)
+        }
+        composable("pantalla_desvincular") {
+            PantallaDesvincularNino(navController)
+        }
+        composable("pantalla_mensajes/{nombreNino}") { backStackEntry ->
+            val nombreNino = backStackEntry.arguments?.getString("nombreNino") ?: ""
+            PantallaMensajes(navController, nombreNino)
+        }
+        composable("pantalla_principal") {
+            // aqui va la pantalla que esta haciendo tu compañero
+            // PantallaPrincipal(navController)
+        }
     }
 }
