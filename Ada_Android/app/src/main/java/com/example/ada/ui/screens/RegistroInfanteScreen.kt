@@ -1,5 +1,6 @@
 package com.example.ada.ui.screens
 
+import android.util.Log
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
@@ -28,6 +29,11 @@ import java.util.Locale
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
+import com.example.ada.data.model.CrearSupervisadoRequest
+import com.example.ada.data.remote.ApiService
+import com.example.ada.data.remote.RetrofitClient
+import kotlinx.coroutines.launch
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegistroInfanteScreen(
@@ -39,6 +45,9 @@ fun RegistroInfanteScreen(
 
     var showDatePicker by remember { mutableStateOf(false) }
     var fechaSeleccionada by remember { mutableStateOf<Long?>(null) }
+
+    val coroutineScope = rememberCoroutineScope()
+    var isLoading by remember { mutableStateOf(false) }
 
     val formatter = remember {
         SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
@@ -52,7 +61,8 @@ fun RegistroInfanteScreen(
         nombre.isNotBlank() &&
                 apellidoPaterno.isNotBlank() &&
                 apellidoMaterno.isNotBlank() &&
-                fechaSeleccionada != null
+                fechaSeleccionada != null &&
+                !isLoading
 
     val infiniteTransition = rememberInfiniteTransition(label = "infanteBackground")
 
@@ -203,9 +213,36 @@ fun RegistroInfanteScreen(
             Spacer(modifier = Modifier.height(38.dp))
 
             YouthButton(
-                text = "Crear perfil",
+                // Cambia el texto para dar feedback visual
+                text = if (isLoading) "Guardando..." else "Crear perfil",
                 enabled = camposLlenos,
-                onClick = onEnviarClick
+                onClick = {
+
+                    coroutineScope.launch {
+                        isLoading = true
+                        try {
+                            val request = CrearSupervisadoRequest(
+                                nombre = nombre,
+                                appat = apellidoPaterno,
+                                apmat = apellidoMaterno,
+                                fecha_nacimiento = fechaSeleccionada ?: 0L,
+                                curp = ""
+                            )
+
+                            val response = RetrofitClient.api.crearSupervisado(request)
+
+                            if (response.isSuccessful) {
+                                onEnviarClick()
+                            } else {
+                                Log.e("API", "Error: ${response.errorBody()?.string()}")
+                            }
+                        } catch (e: Exception) {
+                            Log.e("API", "Fallo: ${e.message}")
+                        } finally {
+                            isLoading = false
+                        }
+                    }
+                }
             )
 
             Spacer(modifier = Modifier.height(45.dp))

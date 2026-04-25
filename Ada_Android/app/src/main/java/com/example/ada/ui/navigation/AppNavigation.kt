@@ -51,6 +51,7 @@ fun AppNavigation() {
                     navController.popBackStack()
                 },
                 onEnviarClick = {
+
                     navController.navigate(AppScreen.ResultadoInfante.route)
                 }
             )
