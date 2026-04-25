@@ -44,18 +44,6 @@ fun AppNavigation() {
             )
         }
 
-        composable(AppScreen.Infante.route) {
-            InfanteScreen(
-                onBackClick = {
-                    navController.popBackStack()
-                },
-                onEnviarClick = {
-
-                    navController.navigate(AppScreen.ResultadoInfante.route)
-                }
-            )
-        }
-
         composable(AppScreen.ResultadoInfante.route) {
             ResultadoInfanteScreen(
                 onBackClick = {

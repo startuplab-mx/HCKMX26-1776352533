@@ -1,11 +1,6 @@
 package com.example.ada.ui.screens
 
-<<<<<<< HEAD
-import android.util.Log
-import androidx.compose.animation.animateColorAsState
-=======
 
->>>>>>> b4bf3a2804dca08b7a378eee923932d9cc593dc9
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -39,27 +34,6 @@ import androidx.compose.runtime.remember
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-<<<<<<< HEAD
-import androidx.compose.ui.unit.sp
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.interaction.collectIsFocusedAsState
-import com.example.ada.data.model.CrearSupervisadoRequest
-import com.example.ada.data.remote.RetrofitClient
-import kotlinx.coroutines.launch
-=======
-import java.util.Calendar
-import java.util.TimeZone
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.runtime.rememberCoroutineScope
-import kotlinx.coroutines.launch
-import android.graphics.Bitmap
-import android.net.Uri
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.layout.ContentScale
-import coil.compose.rememberAsyncImagePainter
->>>>>>> b4bf3a2804dca08b7a378eee923932d9cc593dc9
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -77,29 +51,6 @@ fun RegistroInfanteScreen(
     val infiniteTransition = rememberInfiniteTransition(label = "gradient")
 
     val curpValida = curp.isBlank() || curpRegex.matches(curp)
-
-<<<<<<< HEAD
-    val coroutineScope = rememberCoroutineScope()
-    var isLoading by remember { mutableStateOf(false) }
-
-    val formatter = remember {
-        SimpleDateFormat("yyyy/MM/dd", Locale.getDefault())
-    }
-
-    val fechaTexto = fechaSeleccionada?.let {
-        formatter.format(Date(it))
-    } ?: ""
-
-    val camposLlenos =
-        nombre.isNotBlank() &&
-                apellidoPaterno.isNotBlank() &&
-                apellidoMaterno.isNotBlank() &&
-                fechaSeleccionada != null &&
-                !isLoading
-
-    val infiniteTransition = rememberInfiniteTransition(label = "infanteBackground")
-=======
->>>>>>> b4bf3a2804dca08b7a378eee923932d9cc593dc9
 
     val offset by infiniteTransition.animateFloat(
         initialValue = 0f,
@@ -314,51 +265,7 @@ fun RegistroInfanteScreen(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-<<<<<<< HEAD
-            YouthButton(
-                // Cambia el texto para dar feedback visual
-                text = if (isLoading) "Guardando..." else "Crear perfil",
-                enabled = camposLlenos,
-                onClick = {
 
-                    coroutineScope.launch {
-                        isLoading = true
-                        try {
-                            val request = CrearSupervisadoRequest(
-                                nombre = nombre,
-                                appat = apellidoPaterno,
-                                apmat = apellidoMaterno,
-                                fecha_nacimiento = fechaTexto,
-                                curp = ""
-                            )
-
-                            val response = RetrofitClient.api.crearSupervisado(request)
-
-                            if (response.isSuccessful) {
-                                onEnviarClick()
-                            } else {
-                                Log.e("API", "Error: ${response.errorBody()?.string()}")
-                            }
-                        } catch (e: Exception) {
-                            Log.e("API", "Fallo: ${e.message}")
-                        } finally {
-                            isLoading = false
-                        }
-                    }
-                }
-=======
-            RegistroLabel("CURP (opcional):")
-
-            PremiumTextInput(
-                value = curp,
-                onValueChange = {
-                    curp = it.uppercase().take(18)
-                },
-                placeholder = "Ej: ABCD010203HDFXXX09",
-                isError = curp.isNotEmpty() && !curpRegex.matches(curp),
-                shakeOffset = 0f
->>>>>>> b4bf3a2804dca08b7a378eee923932d9cc593dc9
-            )
 
             if (curp.isNotEmpty() && !curpRegex.matches(curp)) {
                 Spacer(modifier = Modifier.height(6.dp))
