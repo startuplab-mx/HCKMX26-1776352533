@@ -3,7 +3,6 @@ package com.example.ada.ui.navigation
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.*
 import com.example.ada.ui.screens.BienvenidaScreen
-import com.example.ada.ui.screens.InfanteScreen
 import com.example.ada.ui.screens.ResultadoInfanteScreen
 import com.example.ada.ui.screens.TutorLoginScreen
 import com.example.ada.ui.screens.RegistroTutorScreen
@@ -81,12 +80,18 @@ fun AppNavigation() {
             )
         }
 
-
         composable(AppScreen.RegistroInfante.route) {
             RegistroInfanteScreen(
-                onEnviarClick = {
-                    navController.navigate(AppScreen.Infante.route)
-                }
+
+                onCancelarClick = {
+                    navController.popBackStack()
+                },
+                onRegistrarseClick = {
+                    navController.navigate(AppScreen.ResultadoInfante.route) {
+                        popUpTo(AppScreen.ResultadoInfante.route) {
+                            inclusive = true
+                        }
+                    }}
             )
         }
 

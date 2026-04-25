@@ -2,7 +2,6 @@ package com.example.ada.ui.navigation
 sealed class AppScreen(val route: String) {
     object Welcome : AppScreen("welcome")
     object Tutor : AppScreen("tutor")
-    object Infante : AppScreen("infante")
 
     object ResultadoInfante : AppScreen("resultado_infante")
 
