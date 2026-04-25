@@ -599,7 +599,10 @@ fun RegistroActionButton(
             )
             .clickable(
                 interactionSource = interactionSource,
-                indication = null,
+                indication = ripple(
+                    bounded = true,
+                    color = Color.White.copy(alpha = 0.35f)
+                ),
                 enabled = enabled
             ) {
                 onClick()

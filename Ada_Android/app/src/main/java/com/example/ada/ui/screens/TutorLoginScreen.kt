@@ -36,6 +36,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.launch
+import androidx.compose.material3.ripple
 
 @Composable
 fun TutorLoginScreen(
@@ -420,8 +421,10 @@ fun PremiumLoginButton(
             )
             .clickable(
                 interactionSource = buttonInteraction,
-                indication = null,
-                enabled = enabled
+                indication = ripple(
+                    bounded = true,
+                    color = Color.White.copy(alpha = 0.35f)
+                ),
             ) {
                 onClick()
             },
