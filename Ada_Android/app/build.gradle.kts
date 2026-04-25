@@ -64,4 +64,9 @@ dependencies {
     implementation("io.github.jan-tennert.supabase:auth-kt")
     implementation("io.ktor:ktor-client-android:3.1.3")
     implementation("androidx.navigation:navigation-compose:2.8.5")
-    implementation("io.coil-kt:coil-compose:2.7.0")}
+    implementation("io.coil-kt:coil-compose:2.7.0")
+    // La API para que ModelTest compile
+    implementation("org.tensorflow:tensorflow-lite-api:2.14.0")
+    // El motor que se descarga de la Play Store
+    implementation("com.google.android.gms:play-services-tflite-java:16.0.1")
+}
