@@ -69,4 +69,11 @@ class ModelTest(context: Context) {
         }
         return padded
     }
+
+    fun predictText(text: String, context: Context): Float {
+        val tokenizer = loadTokenizer(context)
+        val input = tokenize(text, tokenizer)
+        return predict(input)
+    }
+
 }
