@@ -68,7 +68,7 @@ suspend fun vincularSupervisor(
     ): Response<CrearCodigoResponse>
 
     //Consultar Resumen
-    @GET("supervisor/resumen/{id }")
+    @GET("supervisor/resumen/{id}")
     suspend fun consultarResumen(
          @Path("id") id: String
     ): Response<ResumenResponse>
