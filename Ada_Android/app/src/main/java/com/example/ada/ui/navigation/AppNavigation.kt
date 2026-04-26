@@ -3,7 +3,6 @@ package com.example.ada.ui.navigation
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.*
 import com.example.ada.ui.screens.BienvenidaScreen
-import com.example.ada.ui.screens.InfanteScreen
 import com.example.ada.ui.screens.PantallaChat
 import com.example.ada.ui.screens.PantallaCodigo
 import com.example.ada.ui.screens.PantallaMensajes

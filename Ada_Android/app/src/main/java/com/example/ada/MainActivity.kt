@@ -12,11 +12,17 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.lifecycleScope
 import com.example.ada.ui.navigation.AppNavigation
 import com.example.ada.ui.screens.BienvenidaScreen
 import com.example.ada.ui.theme.ADATheme
 import com.cloudinary.android.MediaManager
 import com.example.ada.utils.CloudinaryConfig
+import com.example.ada_prueba.ModelTest
+import com.google.android.gms.tflite.java.TfLite
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : ComponentActivity() {
 
@@ -38,31 +44,4 @@ class MainActivity : ComponentActivity() {
                 AppNavigation()
             }
         }
-
-        TfLite.initialize(this).addOnSuccessListener {
-
-            lifecycleScope.launch {
-
-                try {
-                    val result = withContext(Dispatchers.Default) {
-                        val model = ModelTest(this@MainActivity)
-                        val tokenizer = model.loadTokenizer(this@MainActivity)
-
-                        model.predictText(
-                            "baby vamos a vernos",
-                            this@MainActivity)
-                    }
-
-                    Log.d("MODEL_RESULT", "Predicción exitosa: $result")
-
-                } catch (e: Exception) {
-                    Log.e("MODEL_ERROR", "Error: ${e.message}")
-                }
-            }
-
-        }.addOnFailureListener {
-            Log.e("MODEL_ERROR", "No se pudo inicializar TensorFlow Lite via GMS")
-        }
-
-    }
-}
+}}
