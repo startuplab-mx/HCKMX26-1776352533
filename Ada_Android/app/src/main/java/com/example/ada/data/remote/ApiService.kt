@@ -8,6 +8,7 @@ import com.example.ada.data.model.CrearSupervisorRequest
 import com.example.ada.data.model.CrearSupervisorResponse
 import com.example.ada.data.model.LoginRequest
 import com.example.ada.data.model.LoginResponse
+import com.example.ada.data.model.ResponseCodigo
 import com.example.ada.data.model.consultarEquipos
 import retrofit2.Response
 import retrofit2.http.Body
@@ -48,4 +49,10 @@ interface ApiService {
     suspend fun login(
         @Body request: LoginRequest
     ): Response<LoginResponse>
+
+    //VINCULAR CODIGO
+    @POST("supervisor/vincular/{id}")
+    suspend fun vincularSupervisor(
+        @Path("id") id: String
+    ): Response<ResponseCodigo>
 }
