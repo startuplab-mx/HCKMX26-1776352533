@@ -10,13 +10,14 @@ import com.example.ada.data.model.CrearSupervisorResponse
 import com.example.ada.data.model.LoginRequest
 import com.example.ada.data.model.LoginResponse
 import com.example.ada.data.model.ResponseCodigo
+import com.example.ada.data.model.ResumenResponse
 import com.example.ada.data.model.consultarEquipos
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
-
+import com.example.ada.data.model.CodigoVincular
 interface ApiService {
 
     //SUPERVISADOS
@@ -42,23 +43,33 @@ interface ApiService {
     ): Response<CrearSupervisadoResponse>
 
     @POST("supervisor/registro/")
+
     suspend fun crearSupervisor(
         @Body request: CrearSupervisorRequest
     ): Response<CrearSupervisorResponse>
+
 
     @POST("supervisor/login")
     suspend fun login(
         @Body request: LoginRequest
     ): Response<LoginResponse>
 
-    //VINCULAR CODIGO
-    @POST("supervisor/vincular/{id}")
-    suspend fun vincularSupervisor(
-        @Path("id") id: String
-    ): Response<ResponseCodigo>
+//VINCULAR CODIGO
+@POST("supervisor/vincular/{id}")
+suspend fun vincularSupervisor(
+    @Path("id") id: String,
+    @Body request: CodigoVincular
+): Response<ResponseCodigo>
+
 
     @POST("supervisado/codigo/vinculacion/{id}")
     suspend fun crearCodigo(
-        @Path("id") id: String
+        @Path("id") id: String,
     ): Response<CrearCodigoResponse>
+
+    //Consultar Resumen
+    @GET("supervisor/resumen/{id }")
+    suspend fun consultarResumen(
+         @Path("id") id: String
+    ): Response<ResumenResponse>
 }

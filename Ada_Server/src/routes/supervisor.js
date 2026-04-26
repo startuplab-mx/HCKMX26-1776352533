@@ -8,7 +8,8 @@ import {crearSupervisor,
     borrarSupervisado,
     updateSupervisado,
     consultarSupervisados,
-    vincularSupervisados
+    vincularSupervisados,
+    obtenerResumenSupervisados
 
 } from '../controllers/supervisor.controller.js';
 
@@ -35,6 +36,9 @@ router.get('/supervisado/:id', consultarSupervisados);
 
 //Vincular supervisado a supervisor
 router.post('/vincular/:id', vincularSupervisados);
+
+//Obtener Resumen de supervisados
+router.get('/resumen/:idSupervisor', obtenerResumenSupervisados);
 
 export const path = '/supervisor';
 export default router;

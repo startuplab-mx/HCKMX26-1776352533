@@ -1,5 +1,6 @@
 package com.example.ada.ui.screens
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
@@ -23,6 +24,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -46,7 +48,9 @@ fun RegistroInfanteScreen(
     var apellidoMaterno by remember { mutableStateOf("") }
     var curp by remember { mutableStateOf("") }
 
+    val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
+
     var isLoading by remember { mutableStateOf(false) }
     var mensajeError by remember { mutableStateOf<String?>(null) }
 
@@ -71,8 +75,7 @@ fun RegistroInfanteScreen(
         nombre.isNotBlank() &&
                 apellidoPaterno.isNotBlank() &&
                 apellidoMaterno.isNotBlank() &&
-                fechaSeleccionada != null &&
-                curp.isNotBlank()
+                fechaSeleccionada != null
 
     val infiniteTransition = rememberInfiniteTransition(label = "gradient")
 
@@ -269,7 +272,7 @@ fun RegistroInfanteScreen(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            RegistroLabel2("CURP:")
+            RegistroLabel2("CURP (opcional):")
 
             PremiumTextInput(
                 value = curp,
@@ -297,7 +300,8 @@ fun RegistroInfanteScreen(
                 Text(
                     text = mensajeError!!,
                     color = Color(0xFFFF4D6D),
-                    style = MaterialTheme.typography.bodyMedium
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Center
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
@@ -335,8 +339,28 @@ fun RegistroInfanteScreen(
                                 val response = RetrofitClient.api.crearSupervisado(request)
 
                                 if (response.isSuccessful) {
-                                    Log.d("API", "Registro guardado: ${response.body()}")
-                                    onRegistrarseClick()
+                                    val supervisadoId = response.body()
+                                        ?.data
+                                        ?.firstOrNull()
+                                        ?.id
+
+                                    if (supervisadoId != null) {
+                                        val prefs = context.getSharedPreferences(
+                                            "ADA_PREFS",
+                                            Context.MODE_PRIVATE
+                                        )
+
+                                        prefs.edit()
+                                            .putString("SUPERVISADO_ID", supervisadoId)
+                                            .apply()
+
+                                        Log.d("API", "SUPERVISADO_ID guardado: $supervisadoId")
+
+                                        onRegistrarseClick()
+                                    } else {
+                                        mensajeError = "No se recibió el ID del infante"
+                                    }
+
                                 } else {
                                     val error = response.errorBody()?.string()
                                     Log.e("API", "Error backend: $error")
