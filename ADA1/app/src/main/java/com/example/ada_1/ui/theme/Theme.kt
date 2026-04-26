@@ -1,4 +1,4 @@
-package com.example.ada_1.ui.theme
+package com.example.ada.ui.theme
 import androidx.compose.ui.graphics.Color
 
 val DarkMaroon = Color(0xFF1E020B)
