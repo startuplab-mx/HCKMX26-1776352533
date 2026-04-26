@@ -1,7 +1,6 @@
 package com.example.ada
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -14,7 +13,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.lifecycleScope
 import com.example.ada.ui.navigation.AppNavigation
-import com.example.ada.ui.screens.BienvenidaScreen
 import com.example.ada.ui.theme.ADATheme
 import com.cloudinary.android.MediaManager
 import com.example.ada.utils.CloudinaryConfig
@@ -44,4 +42,6 @@ class MainActivity : ComponentActivity() {
                 AppNavigation()
             }
         }
+    }
+}
 }}
