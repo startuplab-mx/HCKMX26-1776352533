@@ -9,7 +9,8 @@ data class ChatMessage(val text: String, val role: String)
 
 class AdaAccessibilityService : AccessibilityService() {
 
-    private val messageProcessor = MessageProcesor(AdaModelManager())
+    private lateinit var modelManager: AdaModelManager
+    private lateinit var messageProcessor: MessageProcesor
     private val whatsappExtractor = WhatsAppExtractor()
     private val instagramExtractor = InstagramExtractor()
     private val tiktokExtractor=TiktokExtractor()
@@ -18,6 +19,7 @@ class AdaAccessibilityService : AccessibilityService() {
     private var needsSessionUpdate: Boolean = true
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
+
         val packageName = event?.packageName?.toString() ?: return
         val eventType = event.eventType
 
@@ -39,6 +41,7 @@ class AdaAccessibilityService : AccessibilityService() {
             }
         }
         */
+
         val targetApps = listOf(
             "com.whatsapp",
             "com.instagram.android",
@@ -106,7 +109,12 @@ class AdaAccessibilityService : AccessibilityService() {
     }
 
     override fun onInterrupt() {}
-
+    override fun onServiceConnected() {
+        super.onServiceConnected()
+        modelManager = AdaModelManager(this)
+        messageProcessor = MessageProcesor(modelManager)
+        Log.d("ADA_RADAR", "Servicio de accesibilidad conectado e inicializado.")
+    }
     private fun extractSessionName(node: AccessibilityNodeInfo?, screenHeight: Int): String? {
         if (node == null) return null
 
