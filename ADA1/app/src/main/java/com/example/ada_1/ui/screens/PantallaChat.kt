@@ -1,4 +1,4 @@
-package com.example.ada_1.ui.screens
+package com.example.ada.ui.screens
 
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
@@ -23,7 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.ada_1.R
+import com.example.ada.R
 
 // Definiciones locales para evitar errores de importación
 val barrasuperiorColor = Color(0xFF1E0D41)
