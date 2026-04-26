@@ -39,7 +39,7 @@ fun AppNavigation() {
                     navController.popBackStack()
                 },
                 onLoginClick = {
-                    // Aquí después mandarás al layout principal del tutor
+                    navController.navigate("pantalla_chat")
                 },
                 onRegisterClick = {
                     navController.navigate(AppScreen.RegistroTutor.route)
