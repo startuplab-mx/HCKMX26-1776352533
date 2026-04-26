@@ -66,8 +66,11 @@ dependencies {
     implementation("io.ktor:ktor-client-android:3.1.3")
     implementation("androidx.navigation:navigation-compose:2.8.5")
     implementation("io.coil-kt:coil-compose:2.7.0")
-    // La API para que ModelTest compile
-    implementation("org.tensorflow:tensorflow-lite-api:2.14.0")
-    // El motor que se descarga de la Play Store
-    implementation("com.google.android.gms:play-services-tflite-java:16.0.1")
+
+    //Esto es lo del servidor, no lo borren:
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.9.3")
+
+    implementation("com.cloudinary:cloudinary-android:3.0.2")
 }

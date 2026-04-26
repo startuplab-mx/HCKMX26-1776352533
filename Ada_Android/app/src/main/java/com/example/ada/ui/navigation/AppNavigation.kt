@@ -48,17 +48,6 @@ fun AppNavigation() {
             )
         }
 
-        composable(AppScreen.Infante.route) {
-            InfanteScreen(
-                onBackClick = {
-                    navController.popBackStack()
-                },
-                onEnviarClick = {
-                    navController.navigate(AppScreen.ResultadoInfante.route)
-                }
-            )
-        }
-
         composable(AppScreen.ResultadoInfante.route) {
             ResultadoInfanteScreen(
                 onBackClick = {
@@ -83,12 +72,18 @@ fun AppNavigation() {
             )
         }
 
-
         composable(AppScreen.RegistroInfante.route) {
             RegistroInfanteScreen(
-                onEnviarClick = {
-                    navController.navigate(AppScreen.Infante.route)
-                }
+
+                onCancelarClick = {
+                    navController.popBackStack()
+                },
+                onRegistrarseClick = {
+                    navController.navigate(AppScreen.ResultadoInfante.route) {
+                        popUpTo(AppScreen.ResultadoInfante.route) {
+                            inclusive = true
+                        }
+                    }}
             )
         }
     composable("pantalla_chat") {

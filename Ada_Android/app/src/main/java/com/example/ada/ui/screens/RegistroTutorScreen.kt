@@ -1,53 +1,50 @@
 package com.example.ada.ui.screens
 
-
+import android.graphics.Bitmap
+import android.net.Uri
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.*
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.SelectableDates
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.compose.material3.Text
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.example.ada.R
-import androidx.compose.material3.*
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-import java.util.Calendar
-import java.util.TimeZone
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.runtime.rememberCoroutineScope
-import kotlinx.coroutines.launch
-import android.graphics.Bitmap
-import android.net.Uri
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
+import com.example.ada.R
+import com.example.ada.data.model.CrearSupervisorRequest
+import com.example.ada.data.remote.RetrofitClient
+import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
+import androidx.compose.ui.platform.LocalContext
+import com.example.ada.data.remote.subirIneACloudinary
 @Composable
-@OptIn(ExperimentalMaterial3Api::class) // Doumentar esto es para poner que salga un calendario en fecha de nacimiento
+@OptIn(ExperimentalMaterial3Api::class)
 fun RegistroTutorScreen(
     onBackClick: () -> Unit,
     onCancelarClick: () -> Unit,
@@ -63,16 +60,58 @@ fun RegistroTutorScreen(
     var contrasena by remember { mutableStateOf("") }
     var confirmarContrasena by remember { mutableStateOf("") }
     var mostrarErrorContrasena by remember { mutableStateOf(false) }
-    val infiniteTransition = rememberInfiniteTransition(label = "gradient")
+
+    val coroutineScope = rememberCoroutineScope()
+    var isLoading by remember { mutableStateOf(false) }
+    var mensajeError by remember { mutableStateOf<String?>(null) }
+
+    var showDatePicker by remember { mutableStateOf(false) }
+    var fechaSeleccionada by remember { mutableStateOf<Long?>(null) }
+
     val correoValido = android.util.Patterns.EMAIL_ADDRESS.matcher(correo).matches()
+    val context = LocalContext.current
     val curpRegex = Regex(
         "^[A-Z][AEIOU][A-Z]{2}\\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\\d|3[01])[HM](AS|BC|BS|CC|CL|CM|CS|CH|DF|DG|GT|GR|HG|JC|MC|MN|MS|NT|NL|OC|PL|QT|QR|SP|SL|SR|TC|TS|TL|VZ|YN|ZS|NE)[B-DF-HJ-NP-TV-Z]{3}[A-Z0-9]\\d$"
     )
 
     val curpValida = curpRegex.matches(curp)
     val ineCargada = ineUri != null || ineBitmap != null
+    val contrasenasCoinciden = contrasena.trim() == confirmarContrasena.trim()
 
+    val formatter = remember {
+        SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+    }
 
+    val fechaTexto = fechaSeleccionada?.let {
+        formatter.format(Date(it))
+    } ?: ""
+
+    val camposLlenos =
+        nombre.isNotBlank() &&
+                apellidoPaterno.isNotBlank() &&
+                apellidoMaterno.isNotBlank() &&
+                fechaSeleccionada != null &&
+                correo.isNotBlank() &&
+                curp.isNotBlank() &&
+                ineCargada &&
+                contrasena.isNotBlank() &&
+                confirmarContrasena.isNotBlank()
+
+    val galeriaLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri ->
+        ineUri = uri
+        ineBitmap = null
+    }
+
+    val camaraLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicturePreview()
+    ) { bitmap ->
+        ineBitmap = bitmap
+        ineUri = null
+    }
+
+    val infiniteTransition = rememberInfiniteTransition(label = "gradient")
 
     val offset by infiniteTransition.animateFloat(
         initialValue = 0f,
@@ -124,42 +163,6 @@ fun RegistroTutorScreen(
                 .fillMaxSize()
                 .background(secondaryGlow)
         )
-        var showDatePicker by remember { mutableStateOf(false) }
-        var fechaSeleccionada by remember { mutableStateOf<Long?>(null) }
-
-        val formatter = remember {
-            SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-        }
-
-        val fechaTexto = fechaSeleccionada?.let {
-            formatter.format(Date(it))
-        } ?: ""
-
-        val camposLlenos =
-            nombre.isNotBlank() &&
-                    apellidoPaterno.isNotBlank() &&
-                    apellidoMaterno.isNotBlank() &&
-                    fechaSeleccionada != null &&
-                    correo.isNotBlank() &&
-                    curp.isNotBlank() &&
-                    ineCargada &&
-                    contrasena.isNotBlank() &&
-                    confirmarContrasena.isNotBlank()
-
-        val contrasenasCoinciden = contrasena.trim() == confirmarContrasena.trim()
-        val galeriaLauncher = rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.GetContent()
-        ) { uri ->
-            ineUri = uri
-            ineBitmap = null
-        }
-
-        val camaraLauncher = rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.TakePicturePreview()
-        ) { bitmap ->
-            ineBitmap = bitmap
-            ineUri = null
-        }
 
         Column(
             modifier = Modifier
@@ -170,8 +173,8 @@ fun RegistroTutorScreen(
         ) {
             val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
             calendar.add(Calendar.YEAR, -18)
-
             val maxDateMillis = calendar.timeInMillis
+
             if (showDatePicker) {
                 val datePickerState = rememberDatePickerState(
                     selectableDates = object : SelectableDates {
@@ -189,57 +192,55 @@ fun RegistroTutorScreen(
                 DatePickerDialog(
                     onDismissRequest = { showDatePicker = false },
                     confirmButton = {
-                        TextButton(onClick = {
-                            val selectedDate = datePickerState.selectedDateMillis
+                        TextButton(
+                            onClick = {
+                                val selectedDate = datePickerState.selectedDateMillis
 
-                            if (selectedDate != null && selectedDate <= maxDateMillis) {
-                                fechaSeleccionada = selectedDate
-                                showDatePicker = false
+                                if (selectedDate != null && selectedDate <= maxDateMillis) {
+                                    fechaSeleccionada = selectedDate
+                                    showDatePicker = false
+                                }
                             }
-                        }) {
+                        ) {
                             Text("Aceptar", color = Color(0xFFC77DFF))
                         }
                     },
                     dismissButton = {
-                        TextButton(onClick = {
-                            showDatePicker = false
-                        }) {
+                        TextButton(
+                            onClick = {
+                                showDatePicker = false
+                            }
+                        ) {
                             Text("Cancelar", color = Color(0xFFB8A9FF))
                         }
                     },
                     colors = DatePickerDefaults.colors(
-                        containerColor = Color(0xFF0C0521) // fondo oscuro
+                        containerColor = Color(0xFF0C0521)
                     )
                 ) {
                     DatePicker(
                         state = datePickerState,
                         colors = DatePickerDefaults.colors(
                             containerColor = Color(0xFF0C0521),
-
                             titleContentColor = Color.White,
                             headlineContentColor = Color(0xFFC77DFF),
-
                             weekdayContentColor = Color(0xFFB8A9FF),
                             subheadContentColor = Color(0xFFB8A9FF),
-
                             yearContentColor = Color.White,
                             currentYearContentColor = Color(0xFFC77DFF),
-
                             selectedYearContentColor = Color.White,
                             selectedYearContainerColor = Color(0xFF7B2CBF),
-
                             dayContentColor = Color.White,
                             disabledDayContentColor = Color(0xFF555555),
-
                             selectedDayContentColor = Color.White,
                             selectedDayContainerColor = Color(0xFF9D4EDD),
-
                             todayContentColor = Color(0xFFC77DFF),
                             todayDateBorderColor = Color(0xFFC77DFF)
                         )
                     )
                 }
             }
+
             Spacer(modifier = Modifier.height(50.dp))
 
             Image(
@@ -312,7 +313,7 @@ fun RegistroTutorScreen(
                 contentAlignment = Alignment.CenterStart
             ) {
                 Text(
-                    text = if (fechaTexto.isEmpty()) "DD/MM/YYYY" else fechaTexto,
+                    text = if (fechaTexto.isEmpty()) "YYYY-MM-DD" else fechaTexto,
                     color = if (fechaTexto.isEmpty()) Color(0xFFB8A9FF) else Color.White,
                     style = MaterialTheme.typography.bodyLarge
                 )
@@ -389,6 +390,8 @@ fun RegistroTutorScreen(
                 )
             }
 
+            Spacer(modifier = Modifier.height(12.dp))
+
             RegistroLabel("Contraseña:")
             PremiumTextInput(
                 value = contrasena,
@@ -427,7 +430,19 @@ fun RegistroTutorScreen(
                     textAlign = TextAlign.Center
                 )
             }
+
             Spacer(modifier = Modifier.height(38.dp))
+
+            if (mensajeError != null) {
+                Text(
+                    text = mensajeError!!,
+                    color = Color(0xFFFF4D6D),
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Center
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+            }
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -436,20 +451,62 @@ fun RegistroTutorScreen(
                 RegistroActionButton(
                     text = "Cancelar",
                     modifier = Modifier.weight(1f),
+                    enabled = !isLoading,
                     onClick = onCancelarClick
                 )
 
                 RegistroActionButton(
-                    text = "Registrarse",
+                    text = if (isLoading) "Guardando..." else "Registrarse",
                     modifier = Modifier.weight(1f),
-                    enabled = camposLlenos && correoValido && curpValida,                    onClick = {
+                    enabled = camposLlenos && correoValido && curpValida && !isLoading,
+                    onClick = {
                         if (!contrasenasCoinciden) {
                             mostrarErrorContrasena = true
                             return@RegistroActionButton
                         }
 
                         mostrarErrorContrasena = false
-                        onRegistrarseClick()
+                        mensajeError = null
+
+                        coroutineScope.launch {
+                            isLoading = true
+
+                            try {
+                                val ineUrl = if (ineUri != null) {
+                                    subirIneACloudinary(context, ineUri!!)
+                                } else {
+                                    throw Exception("Selecciona la INE desde galería")
+                                }
+
+                                val request = CrearSupervisorRequest(
+                                    nombre = nombre,
+                                    appat = apellidoPaterno,
+                                    apmat = apellidoMaterno,
+                                    email = correo,
+                                    contrasena = contrasena,
+                                    fecha_nacimiento = fechaTexto,
+                                    curp = curp,
+                                    ine = ineUrl
+                                )
+
+                                val response = RetrofitClient.api.crearSupervisor(request)
+
+                                if (response.isSuccessful) {
+                                    Log.d("API", "Tutor registrado: ${response.body()?.message}")
+                                    onRegistrarseClick()
+                                } else {
+                                    val error = response.errorBody()?.string()
+                                    Log.e("API", "Error backend: $error")
+                                    mensajeError = "No se pudo registrar el tutor"
+                                }
+
+                            } catch (e: Exception) {
+                                Log.e("API", "Error conexión: ${e.message}")
+                                mensajeError = "Error de conexión con el servidor"
+                            } finally {
+                                isLoading = false
+                            }
+                        }
                     }
                 )
             }
@@ -459,17 +516,6 @@ fun RegistroTutorScreen(
     }
 }
 
-@Composable
-fun RegistroLabel(
-    text: String
-) {
-    Text(
-        text = text,
-        color = Color.White,
-        style = MaterialTheme.typography.titleMedium,
-        modifier = Modifier.fillMaxWidth()
-    )
-}
 @Composable
 fun IneSelector(
     ineUri: Uri?,
@@ -549,70 +595,5 @@ fun IneSelector(
                 onClick = onCamaraClick
             )
         }
-    }
-}
-@Composable
-fun RegistroActionButton(
-    text: String,
-    modifier: Modifier = Modifier,
-    enabled: Boolean = true,
-    onClick: () -> Unit
-) {
-    val interactionSource = remember { MutableInteractionSource() }
-    val isPressed by interactionSource.collectIsPressedAsState()
-
-    val scale by animateFloatAsState(
-        targetValue = if (isPressed && enabled) 0.96f else 1f,
-        animationSpec = spring(),
-        label = "registroButtonScale"
-    )
-
-    Box(
-        modifier = modifier
-            .height(56.dp)
-            .scale(scale)
-            .shadow(
-                elevation = if (isPressed) 12.dp else 22.dp,
-                shape = RoundedCornerShape(16.dp),
-                ambientColor = Color(0xFF7B2CBF),
-                spotColor = Color(0xFF9D4EDD)
-            )
-            .background(
-                brush = if (enabled) {
-                    Brush.linearGradient(
-                        colors = listOf(
-                            Color(0xFFC77DFF),
-                            Color(0xFF9D4EDD),
-                            Color(0xFF7B2CBF),
-                            Color(0xFF5A189A)
-                        )
-                    )
-                } else {
-                    Brush.linearGradient(
-                        colors = listOf(
-                            Color(0xFF2A2A2A),
-                            Color(0xFF1F1F1F)
-                        )
-                    )
-                },
-                shape = RoundedCornerShape(16.dp)
-            )
-            .clickable(
-                interactionSource = interactionSource,
-                indication = null,
-                enabled = enabled
-            ) {
-                onClick()
-            },
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = text,
-            color = if (enabled) Color.White else Color.Gray,
-            style = MaterialTheme.typography.labelLarge.copy(
-                textAlign = TextAlign.Center,
-                letterSpacing = 1.sp
-            )
-        )
     }
 }
