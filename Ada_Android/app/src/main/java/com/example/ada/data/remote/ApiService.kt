@@ -40,12 +40,16 @@ interface ApiService {
     ): Response<CrearSupervisadoResponse>
 
     @POST("supervisor/registro/")
+
     suspend fun crearSupervisor(
         @Body request: CrearSupervisorRequest
     ): Response<CrearSupervisorResponse>
+
 
     @POST("supervisor/login")
     suspend fun login(
         @Body request: LoginRequest
     ): Response<LoginResponse>
+
+
 }

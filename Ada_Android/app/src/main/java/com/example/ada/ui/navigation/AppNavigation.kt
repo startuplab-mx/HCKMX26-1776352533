@@ -37,6 +37,15 @@ fun AppNavigation() {
                 },
                 onLoginClick = {
                     // Aquí después mandarás al layout principal del tutor
+
+
+                    //Ejemplo de como poner para que vaya a la otra pagina despues
+                    //del login y ya no pueda volver atras
+                    ///navController.navigate("NOMBRE DE LA PAGINA") {
+                    //    popUpTo(AppScreen.Tutor.route) {
+                    //        inclusive = true
+                    //    }
+                    //}
                 },
                 onRegisterClick = {
                     navController.navigate(AppScreen.RegistroTutor.route)

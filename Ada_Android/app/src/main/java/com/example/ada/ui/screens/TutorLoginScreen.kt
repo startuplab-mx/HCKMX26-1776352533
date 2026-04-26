@@ -37,6 +37,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.launch
 import androidx.compose.material3.ripple
+import com.example.ada.data.remote.RetrofitClient
+import com.example.ada.data.model.LoginRequest
+import android.util.Log
 
 @Composable
 fun TutorLoginScreen(
@@ -47,6 +50,8 @@ fun TutorLoginScreen(
     var correo by remember { mutableStateOf("") }
     var contrasena by remember { mutableStateOf("") }
     var mostrarError by remember { mutableStateOf(false) }
+    var isLoading by remember { mutableStateOf(false) }
+    var mensajeError by remember { mutableStateOf<String?>(null) }
     val correoValido = android.util.Patterns.EMAIL_ADDRESS.matcher(correo).matches()
     val infiniteTransition = rememberInfiniteTransition(label = "gradient")
     val scope = rememberCoroutineScope()
@@ -182,11 +187,11 @@ fun TutorLoginScreen(
                 isPassword = true
             )
 
-            if (mostrarError) {
+            if (mostrarError || mensajeError != null) {
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = "Correo o contraseña incorrectos",
+                    text = mensajeError ?: "Correo o contraseña incorrectos",
                     color = Color(0xFFFF4D6D),
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Center
@@ -196,16 +201,49 @@ fun TutorLoginScreen(
             Spacer(modifier = Modifier.height(if (mostrarError) 48.dp else 60.dp))
 
             PremiumLoginButton(
-                text = "INICIAR SESION",
-                enabled = correo.isNotBlank() && contrasena.isNotBlank() && correoValido,
+                text = if (isLoading) "ENTRANDO..." else "INICIAR SESION",
+                enabled = correo.isNotBlank() &&
+                        contrasena.isNotBlank() &&
+                        correoValido &&
+                        !isLoading,
                 onClick = {
-                    ////lo de la base de datos
+                    scope.launch {
+                        isLoading = true
+                        mostrarError = false
+                        mensajeError = null
 
+                        try {
+                            val request = LoginRequest(
+                                email = correo,
+                                contrasena = contrasena
+                            )
 
+                            val response = RetrofitClient.api.login(request)
 
+                            if (response.isSuccessful) {
+                                val body = response.body()
 
-                            onLoginClick()
+                                Log.d("LOGIN", "Login exitoso: ${body?.message}")
+                                Log.d("LOGIN", "ID recibido: ${body?.id}")
 
+                                onLoginClick()
+                            } else {
+                                val error = response.errorBody()?.string()
+                                Log.e("LOGIN", "Error backend: $error")
+
+                                mostrarError = true
+                                mensajeError = "Correo o contraseña incorrectos"
+                            }
+
+                        } catch (e: Exception) {
+                            Log.e("LOGIN", "Error conexión: ${e.message}")
+
+                            mostrarError = true
+                            mensajeError = "Error de conexión con el servidor"
+                        } finally {
+                            isLoading = false
+                        }
+                    }
                 }
             )
 
@@ -420,14 +458,15 @@ fun PremiumLoginButton(
                 shape = RoundedCornerShape(20.dp)
             )
             .clickable(
-                interactionSource = buttonInteraction,
-                indication = ripple(
-                    bounded = true,
-                    color = Color.White.copy(alpha = 0.35f)
-                ),
-            ) {
-                onClick()
-            },
+            interactionSource = buttonInteraction,
+            indication = ripple(
+                bounded = true,
+                color = Color.White.copy(alpha = 0.35f)
+            ),
+            enabled = enabled
+        ) {
+            onClick()
+        },
         contentAlignment = Alignment.Center
     ) {
         Text(

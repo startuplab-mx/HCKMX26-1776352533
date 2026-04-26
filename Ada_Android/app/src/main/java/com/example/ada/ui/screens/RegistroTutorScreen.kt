@@ -584,16 +584,12 @@ fun IneSelector(
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             RegistroActionButton(
-                text = "Galería",
+                text = "Seleccionar una imagen",
                 modifier = Modifier.weight(1f),
                 onClick = onGaleriaClick
             )
 
-            RegistroActionButton(
-                text = "Cámara",
-                modifier = Modifier.weight(1f),
-                onClick = onCamaraClick
-            )
+
         }
     }
 }

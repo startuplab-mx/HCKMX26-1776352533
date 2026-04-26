@@ -129,32 +129,6 @@ fun ResultadoInfanteScreen(
                 .background(secondaryGlow)
         )
 
-        Box(
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .statusBarsPadding()
-                .padding(top = 20.dp, start = 18.dp)
-                .size(56.dp)
-                .scale(scale)
-                .shadow(
-                    elevation = if (isPressed) 18.dp else 8.dp,
-                    shape = RoundedCornerShape(50)
-                )
-                .clickable(
-                    interactionSource = interactionSource,
-                    indication = null
-                ) {
-                    onBackClick()
-                },
-            contentAlignment = Alignment.Center
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.flecha_salir),
-                contentDescription = "Regresar",
-                modifier = Modifier.size(44.dp)
-            )
-        }
-
 
         Column(
             modifier = Modifier
