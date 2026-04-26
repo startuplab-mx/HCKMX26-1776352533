@@ -8,6 +8,12 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
+import com.cloudinary.android.callback.ErrorInfo
+import com.cloudinary.android.callback.UploadCallback
+
+
+
+
 suspend fun subirIneACloudinary(
     context: Context,
     ineUri: Uri
@@ -17,10 +23,15 @@ suspend fun subirIneACloudinary(
         .upload(ineUri)
         .unsigned(CloudinaryConfig.UPLOAD_PRESET)
         .option("folder", "ada/ines")
-        .callback(object : com.cloudinary.android.callback.UploadCallback {
+        .callback(object : UploadCallback {
+
             override fun onStart(requestId: String?) {}
 
-            override fun onProgress(requestId: String?, bytes: Long, totalBytes: Long) {}
+            override fun onProgress(
+                requestId: String?,
+                bytes: Long,
+                totalBytes: Long
+            ) {}
 
             override fun onSuccess(
                 requestId: String?,
@@ -39,7 +50,7 @@ suspend fun subirIneACloudinary(
 
             override fun onError(
                 requestId: String?,
-                error: com.cloudinary.android.callback.ErrorInfo?
+                error: ErrorInfo?
             ) {
                 continuation.resumeWithException(
                     Exception(error?.description ?: "Error al subir imagen")
@@ -48,7 +59,7 @@ suspend fun subirIneACloudinary(
 
             override fun onReschedule(
                 requestId: String?,
-                error: com.cloudinary.android.callback.ErrorInfo?
+                error: ErrorInfo?
             ) {}
         })
         .dispatch()

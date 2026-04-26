@@ -40,6 +40,10 @@ import androidx.compose.material3.ripple
 import com.example.ada.data.remote.RetrofitClient
 import com.example.ada.data.model.LoginRequest
 import android.util.Log
+import android.content.Context
+import androidx.compose.ui.platform.LocalContext
+
+
 
 @Composable
 fun TutorLoginScreen(
@@ -55,7 +59,7 @@ fun TutorLoginScreen(
     val correoValido = android.util.Patterns.EMAIL_ADDRESS.matcher(correo).matches()
     val infiniteTransition = rememberInfiniteTransition(label = "gradient")
     val scope = rememberCoroutineScope()
-
+    val context = LocalContext.current
 
     val offset by infiniteTransition.animateFloat(
         initialValue = 0f,
@@ -219,22 +223,28 @@ fun TutorLoginScreen(
                             )
 
                             val response = RetrofitClient.api.login(request)
-
                             if (response.isSuccessful) {
                                 val body = response.body()
 
-                                Log.d("LOGIN", "Login exitoso: ${body?.message}")
-                                Log.d("LOGIN", "ID recibido: ${body?.id}")
+                                if (body != null) {
+                                    val prefs = context.getSharedPreferences(
+                                        "ADA_PREFS",
+                                        Context.MODE_PRIVATE
+                                    )
 
-                                onLoginClick()
-                            } else {
-                                val error = response.errorBody()?.string()
-                                Log.e("LOGIN", "Error backend: $error")
+                                    prefs.edit()
+                                        .putString("TUTOR_ID", body.id)
+                                        .apply()
 
-                                mostrarError = true
-                                mensajeError = "Correo o contraseña incorrectos"
+                                    Log.d("LOGIN", "Login exitoso: ${body.message}")
+                                    Log.d("LOGIN", "TUTOR_ID guardado: ${body.id}")
+
+                                    onLoginClick()
+                                } else {
+                                    mostrarError = true
+                                    mensajeError = "No se recibió el ID del tutor"
+                                }
                             }
-
                         } catch (e: Exception) {
                             Log.e("LOGIN", "Error conexión: ${e.message}")
 
