@@ -210,6 +210,10 @@ En el desarrollo de este proyecto, se implementaron diversas herramientas de IA 
 * Recomendaciones de seguridad
 
 ---
+## Video
+https://drive.google.com/drive/folders/13JtCcDes9Gk1PwfTaroefDmWNhTPM_UO?usp=sharing
+
+---
 
 ## Materiales de diseño adicionales
 
