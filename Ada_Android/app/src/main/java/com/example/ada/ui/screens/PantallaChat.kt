@@ -254,7 +254,7 @@ fun PantallaChat(navController: NavController) {
             }
         },
         floatingActionButton = {
-            if (listaNinos.isNotEmpty() && !modoDesvincular) {
+            if (resumen?.data?.isNotEmpty() == true && !modoDesvincular) {
                 FloatingActionButton(
                     onClick = { navController.navigate("pantalla_codigo") },
                     containerColor = Color(0xFFCE8820),
