@@ -11,6 +11,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.clickable
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
@@ -22,9 +23,12 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.ada.R
 
+import com.example.ada.ui.theme.barrasuperior
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PantallaMensajes(navController: NavController, nombreNino: String) {
+    var filtroSeleccionado by remember { mutableStateOf("Todos") }
     val infiniteTransition = rememberInfiniteTransition(label = "gradient")
     val offset by infiniteTransition.animateFloat(
         initialValue = 0f,
@@ -61,35 +65,66 @@ fun PantallaMensajes(navController: NavController, nombreNino: String) {
     )
 
     val mensajesSimulados = listOf(
-        MensajeUI("Mensajes/alertas provinientes de la parte del backend", R.drawable.logo_tt)
+        MensajeUI("Aplicación con riesgo detectado: Instagram", R.drawable.logo_ig),
+        MensajeUI("Mensaje sospechoso en WhatsApp", R.drawable.logo_wts),
+        MensajeUI("Actividad inusual en TikTok", R.drawable.logo_tt)
     )
+
+    val mensajesFiltrados = if (filtroSeleccionado == "Todos") {
+        mensajesSimulados
+    } else {
+        mensajesSimulados.filter { 
+            it.texto.contains(filtroSeleccionado, ignoreCase = true) 
+        }
+    }
 
     Scaffold(
         topBar = {
-            Row(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .background(barrasuperior)
                     .statusBarsPadding()
-                    .padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically
             ) {
-                IconButton(onClick = { navController.popBackStack() }) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.back_chat),
-                        contentDescription = "regresar",
-                        tint = Color.White,
-                        modifier = Modifier.size(30.dp)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.back_chat),
+                            contentDescription = "regresar",
+                            tint = Color.White,
+                            modifier = Modifier.size(30.dp)
+                        )
+                    }
+                    
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    Text(
+                        text = nombreNino,
+                        color = Color.White,
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold
                     )
                 }
-                
-                Spacer(modifier = Modifier.width(8.dp))
 
-                Text(
-                    text = nombreNino,
-                    color = Color.White,
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold
-                )
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 12.dp, start = 16.dp, end = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    BotonFiltroApp("Todos", filtroSeleccionado == "Todos") { filtroSeleccionado = "Todos" }
+                    BotonFiltroApp("Instagram", filtroSeleccionado == "Instagram") { filtroSeleccionado = "Instagram" }
+                    BotonFiltroApp("WhatsApp", filtroSeleccionado == "WhatsApp") { filtroSeleccionado = "WhatsApp" }
+                    BotonFiltroApp("TikTok", filtroSeleccionado == "TikTok") { filtroSeleccionado = "TikTok" }
+                }
+                
+                HorizontalDivider(color = Color.Gray.copy(alpha = 0.5f), thickness = 1.dp)
             }
         },
         containerColor = Color.Transparent
@@ -105,14 +140,31 @@ fun PantallaMensajes(navController: NavController, nombreNino: String) {
 
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.Bottom
+                contentPadding = PaddingValues(16.dp)
             ) {
-                items(mensajesSimulados) { mensaje ->
+                items(mensajesFiltrados) { mensaje ->
                     FilaMensaje(mensaje)
                 }
             }
         }
+    }
+}
+
+@Composable
+fun BotonFiltroApp(nombre: String, seleccionado: Boolean, onClick: () -> Unit) {
+    Surface(
+        modifier = Modifier
+            .clip(RoundedCornerShape(50))
+            .clickable { onClick() },
+        color = if (seleccionado) Color(0xFFCE8820) else Color.Gray.copy(alpha = 0.6f)
+    ) {
+        Text(
+            text = nombre,
+            color = Color.White,
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Bold
+        )
     }
 }
 
@@ -127,9 +179,9 @@ fun FilaMensaje(mensaje: MensajeUI) {
     ) {
         // icono de la app provinente
         Image(
-            painter = painterResource(id = R.drawable.logo_tt),
+            painter = painterResource(id = mensaje.appIcon),
             contentDescription = null,
-            modifier = Modifier.size(40.dp)
+            modifier = Modifier.size(40.dp).clip(RoundedCornerShape(8.dp))
         )
         
         Spacer(modifier = Modifier.width(12.dp))

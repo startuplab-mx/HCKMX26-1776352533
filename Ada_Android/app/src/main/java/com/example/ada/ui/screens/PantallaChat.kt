@@ -172,18 +172,6 @@ fun PantallaChat(navController: NavController) {
                     }
                 }
                 
-                // bontones filtro para las apps
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 12.dp, start = 16.dp, end = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    BotonFiltroApp("Instagram")
-                    BotonFiltroApp("Whahsapp")
-                    BotonFiltroApp("TikTok")
-                }
-                
                 HorizontalDivider(color = Color.Gray.copy(alpha = 0.5f), thickness = 1.dp)
             }
         },
