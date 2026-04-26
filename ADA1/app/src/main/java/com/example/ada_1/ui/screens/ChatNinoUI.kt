@@ -1,4 +1,4 @@
-package com.example.ada_1.ui.screens
+package com.example.ada.ui.screens
 
 data class ChatNinoUI(
     val id: String,
