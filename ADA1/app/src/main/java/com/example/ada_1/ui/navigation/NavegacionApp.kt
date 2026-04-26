@@ -1,13 +1,13 @@
-package com.example.ada_1.ui.navigation
+package com.example.ada.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.ada_1.ui.screens.PantallaChat
-import com.example.ada_1.ui.screens.PantallaCodigo
-import com.example.ada_1.ui.screens.PantallaDesvincularNino
-import com.example.ada_1.ui.screens.PantallaMensajes
+import com.example.ada.ui.screens.PantallaChat
+import com.example.ada.ui.screens.PantallaCodigo
+import com.example.ada.ui.screens.PantallaDesvincularNino
+import com.example.ada.ui.screens.PantallaMensajes
 
 @Composable
 fun NavegacionApp() {
