@@ -1,0 +1,7 @@
+com.example.ada.app-pngs-0 C:\Users\Gio13\OneDrive\Documentos\Ada_Proyecto\HCKMX26-1776352533\Ada_Android\app\build\generated\res\pngs\debug
+com.example.ada.app-updated_navigation_xml-1 C:\Users\Gio13\OneDrive\Documentos\Ada_Proyecto\HCKMX26-1776352533\Ada_Android\app\build\generated\updated_navigation_xml\debug
+com.example.ada.app-packageDebugResources-2 C:\Users\Gio13\OneDrive\Documentos\Ada_Proyecto\HCKMX26-1776352533\Ada_Android\app\build\intermediates\incremental\debug\packageDebugResources\merged.dir
+com.example.ada.app-packageDebugResources-3 C:\Users\Gio13\OneDrive\Documentos\Ada_Proyecto\HCKMX26-1776352533\Ada_Android\app\build\intermediates\incremental\debug\packageDebugResources\stripped.dir
+com.example.ada.app-debug-4 C:\Users\Gio13\OneDrive\Documentos\Ada_Proyecto\HCKMX26-1776352533\Ada_Android\app\build\intermediates\merged_res\debug\mergeDebugResources
+com.example.ada.app-debug-5 C:\Users\Gio13\OneDrive\Documentos\Ada_Proyecto\HCKMX26-1776352533\Ada_Android\app\src\debug\res
+com.example.ada.app-main-6 C:\Users\Gio13\OneDrive\Documentos\Ada_Proyecto\HCKMX26-1776352533\Ada_Android\app\src\main\res
