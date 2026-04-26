@@ -96,7 +96,7 @@ class AdaAccessibilityService : AccessibilityService() {
                     }
 
                     if (extractedMessages.isNotEmpty()) {
-                        messageProcessor.onScreenUpdated(extractedMessages)
+                        messageProcessor.onScreenUpdated(extractedMessages, packageName)
                     }
                 } else {
                     messageProcessor.clearContext()

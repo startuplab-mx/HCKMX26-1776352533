@@ -14,11 +14,7 @@ class AdaModelManager(private val context: Context) {
 
     private var isInitialized = false
     private var model: ModelTest? = null
-
-    // CoroutineScope independiente para no bloquear el hilo principal
     private val processingScope = CoroutineScope(Dispatchers.Default)
-
-    // El "cadenero" que crea la cola secuencial
     private val mutex = Mutex()
 
     init {
@@ -34,26 +30,27 @@ class AdaModelManager(private val context: Context) {
 
     fun analyzeContext(contextPrompt: String) {
         if (!isInitialized || model == null) {
-            Log.w("ADA_AI", "Modelo aún no inicializado, el mensaje se perderá: $contextPrompt")
+            Log.w("ADA_AI", "Modelo aún no inicializado: $contextPrompt")
             return
         }
 
-        // Se lanza la corrutina inmediatamente, pero el mutex las forma en fila
         processingScope.launch {
             mutex.withLock {
                 Log.d("ADA_AI", "Analizando en cola...\nTexto: $contextPrompt")
-
                 try {
-                    // Aquí la IA se toma su tiempo sin colisionar
                     val result = model?.predictText(contextPrompt, context)
                     Log.d("ADA_AI", "Resultado de inferencia: $result")
 
-                    // Aquí puedes disparar una notificación local si el resultado es alerta
-
+                    if (result != null && result >= 0.7f) {
+                        AlertSender.send(
+                            mensaje   = GlobalContext.formattedContext,
+                            appOrigen = GlobalContext.sourceApp
+                        )
+                    }
                 } catch (e: Exception) {
-                    Log.e("ADA_AI", "El modelo crasheó en la inferencia: ${e.message}")
+                    Log.e("ADA_AI", "El modelo crasheó: ${e.message}")
                 }
-            } // Al salir de este bloque, el mutex deja pasar al siguiente mensaje
+            }
         }
     }
 }

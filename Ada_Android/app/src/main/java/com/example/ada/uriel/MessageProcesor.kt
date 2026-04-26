@@ -41,22 +41,33 @@ class MessageProcesor(private val modelManager: AdaModelManager) {
         currentSessionName = name.trim()
     }
 
-    fun onScreenUpdated(extractedMessages: List<ChatMessage>) {
-        debounceRunnable?.let { handler.removeCallbacks(it) }
-
-        debounceRunnable = Runnable {
-            processStableScreen(extractedMessages)
-        }
-
-        handler.postDelayed(debounceRunnable!!, debounceDelay)
-    }
 
     fun clearContext() {
         debounceRunnable?.let { handler.removeCallbacks(it) }
         recentMessagesCache.clear()
         contextWindow.clear()
     }
+    // Agrega esta propiedad
+    private var sourceApp: String = ""
 
+    // Mapeo legible para el backend
+    private fun resolveAppName(packageName: String): String = when (packageName) {
+        "com.whatsapp"           -> "WhatsApp"
+        "com.instagram.android"  -> "Instagram"
+        "com.zhiliaoapp.musically" -> "TikTok"
+        else -> packageName
+    }
+
+    // Cambia la firma
+    fun onScreenUpdated(extractedMessages: List<ChatMessage>, packageName: String) {
+        sourceApp = resolveAppName(packageName)
+
+        debounceRunnable?.let { handler.removeCallbacks(it) }
+        debounceRunnable = Runnable {
+            processStableScreen(extractedMessages)
+        }
+        handler.postDelayed(debounceRunnable!!, debounceDelay)
+    }
     private fun processStableScreen(messages: List<ChatMessage>) {
         val newMessages = mutableListOf<ChatMessage>()
 
@@ -84,6 +95,7 @@ class MessageProcesor(private val modelManager: AdaModelManager) {
             .joinToString(" ") { it.text }
 
         GlobalContext.formattedContext = formattedContext
+        GlobalContext.sourceApp = sourceApp
         Log.d("ADA_LOG", "Ventana de contexto enviada a IA:\n$formattedContext")
 
         modelManager.analyzeContext(formattedContext)
