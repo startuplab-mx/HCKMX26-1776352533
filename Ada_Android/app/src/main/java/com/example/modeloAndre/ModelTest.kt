@@ -49,13 +49,17 @@ class ModelTest(context: Context) {
     fun loadTokenizer(context: Context): Map<String, Int> {
         val json = context.assets.open("tokenizer.json").bufferedReader().use { it.readText() }
         val wordIndex = mutableMapOf<String, Int>()
-        val regex = "\"(.*?)\":(\\d+)".toRegex()
+
+        // ✅ Agrega \s* para aceptar espacios después de los dos puntos
+        val regex = "\"(.*?)\":\\s*(\\d+)".toRegex()
+
         val matches = regex.findAll(json)
         for (match in matches) {
             wordIndex[match.groupValues[1]] = match.groupValues[2].toInt()
         }
         return wordIndex
     }
+
 
     fun tokenize(text: String, wordIndex: Map<String, Int>): IntArray {
         val tokens = text.lowercase().split(" ")
