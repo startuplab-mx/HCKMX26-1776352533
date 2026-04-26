@@ -3,7 +3,9 @@ package com.example.ada.ui.navigation
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.*
 import com.example.ada.ui.screens.BienvenidaScreen
-import com.example.ada.ui.screens.InfanteScreen
+import com.example.ada.ui.screens.PantallaChat
+import com.example.ada.ui.screens.PantallaCodigo
+import com.example.ada.ui.screens.PantallaMensajes
 import com.example.ada.ui.screens.ResultadoInfanteScreen
 import com.example.ada.ui.screens.TutorLoginScreen
 import com.example.ada.ui.screens.RegistroTutorScreen
@@ -37,21 +39,10 @@ fun AppNavigation() {
                     navController.popBackStack()
                 },
                 onLoginClick = {
-                    // Aquí después mandarás al layout principal del tutor
+                    navController.navigate("pantalla_chat")
                 },
                 onRegisterClick = {
                     navController.navigate(AppScreen.RegistroTutor.route)
-                }
-            )
-        }
-
-        composable(AppScreen.Infante.route) {
-            InfanteScreen(
-                onBackClick = {
-                    navController.popBackStack()
-                },
-                onEnviarClick = {
-                    navController.navigate(AppScreen.ResultadoInfante.route)
                 }
             )
         }
@@ -80,14 +71,40 @@ fun AppNavigation() {
             )
         }
 
-
         composable(AppScreen.RegistroInfante.route) {
             RegistroInfanteScreen(
-                onEnviarClick = {
-                    navController.navigate(AppScreen.Infante.route)
-                }
+
+                onCancelarClick = {
+                    navController.popBackStack()
+                },
+                onRegistrarseClick = {
+                    navController.navigate(AppScreen.ResultadoInfante.route) {
+                        popUpTo(AppScreen.ResultadoInfante.route) {
+                            inclusive = true
+                        }
+                    }}
             )
         }
+    composable("pantalla_chat") {
+            PantallaChat(navController)
+        }
 
+        composable("pantalla_codigo") {
+            PantallaCodigo(navController)
+        }
+
+        /*
+        composable("pantalla_desvincular") {
+            PantallaDesvincularNino(navController)
+        }*/
+
+        composable("pantalla_mensajes/{nombreNino}") { backStackEntry ->
+            val nombreNino = backStackEntry.arguments?.getString("nombreNino") ?: ""
+            PantallaMensajes(navController, nombreNino)
+        }
+        composable("pantalla_principal") {
+            // aqui va la pantalla que esta haciendo tu compañero
+            // PantallaPrincipal(navController)
+        }
     }
 }
