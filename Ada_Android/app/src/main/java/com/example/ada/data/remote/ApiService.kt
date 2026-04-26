@@ -44,7 +44,7 @@ interface ApiService {
         @Body request: CrearSupervisorRequest
     ): Response<CrearSupervisorResponse>
 
-    @POST("api/login")
+    @POST("supervisor/login")
     suspend fun login(
         @Body request: LoginRequest
     ): Response<LoginResponse>
