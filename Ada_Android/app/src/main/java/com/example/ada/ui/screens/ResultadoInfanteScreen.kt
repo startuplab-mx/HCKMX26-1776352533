@@ -54,12 +54,24 @@ import androidx.compose.ui.layout.ContentScale
 import coil.compose.rememberAsyncImagePainter
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.rememberCoroutineScope
+import com.example.ada.data.remote.RetrofitClient
+import android.util.Log
+import android.content.Context
+import kotlinx.coroutines.launch
+import android.util.Log.e
 @Composable
 fun ResultadoInfanteScreen(
     onBackClick: () -> Unit
 ) {
     var codigo by remember { mutableStateOf("") }
     var mostrarCodigo by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+
+    var mensajeError by remember { mutableStateOf<String?>(null) }
+    var isLoading by remember { mutableStateOf(false) }
 
     fun generarCodigo(): String {
         val chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
@@ -212,14 +224,66 @@ fun ResultadoInfanteScreen(
             RegistroActionButton(
                 text = if (mostrarCodigo) "Ocultar código" else "Vincular",
                 modifier = Modifier.fillMaxWidth(0.6f),
+                enabled = !isLoading,
                 onClick = {
-                    if (codigo.isEmpty()) {
-                        codigo = generarCodigo()
-                    }
+                    coroutineScope.launch {
+                        isLoading = true
+                        mensajeError = null
 
-                    mostrarCodigo = !mostrarCodigo
+                        try {
+                            val prefs = context.getSharedPreferences(
+                                "ADA_PREFS",
+                                Context.MODE_PRIVATE
+                            )
+
+                            val supervisadoId = prefs.getString("SUPERVISADO_ID", null)
+
+                            Log.d("CODIGO", "ID usado: $supervisadoId")
+
+                            if (supervisadoId == null) {
+                                mensajeError = "No se encontró el ID del infante"
+                                return@launch
+                            }
+
+                            if (!mostrarCodigo) {
+
+                                val response = RetrofitClient.api.crearCodigo(supervisadoId)
+
+                                if (response.isSuccessful) {
+
+                                    val codigoResponse = response.body()?.codigo
+
+                                    Log.d("CODIGO", "Respuesta completa: ${response.body()}")
+                                    Log.d("CODIGO", "Código recibido: $codigoResponse")
+
+                                    if (!codigoResponse.isNullOrBlank()) {
+                                        codigo = codigoResponse
+                                        mostrarCodigo = true
+                                    } else {
+                                        mensajeError = "El backend no devolvió el código"
+                                    }
+
+                                } else {
+                                    val error = response.errorBody()?.string()
+                                    Log.e("CODIGO", "Error POST: $error")
+                                    mensajeError = "No se pudo generar el código"
+                                }
+
+                            } else {
+                                // Si ya está visible, solo lo oculta
+                                mostrarCodigo = false
+                            }
+
+                        } catch (e: Exception) {
+                            Log.e("CODIGO", "Error: ${e.message}")
+                            mensajeError = "Error de conexión"
+                        } finally {
+                            isLoading = false
+                        }
+                    }
                 }
             )
+
             if (mostrarCodigo && codigo.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(24.dp))
 
