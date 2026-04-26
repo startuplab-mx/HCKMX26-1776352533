@@ -3,6 +3,10 @@ package com.example.ada.ui.navigation
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.*
 import com.example.ada.ui.screens.BienvenidaScreen
+import com.example.ada.ui.screens.InfanteScreen
+import com.example.ada.ui.screens.PantallaChat
+import com.example.ada.ui.screens.PantallaCodigo
+import com.example.ada.ui.screens.PantallaMensajes
 import com.example.ada.ui.screens.ResultadoInfanteScreen
 import com.example.ada.ui.screens.TutorLoginScreen
 import com.example.ada.ui.screens.RegistroTutorScreen
@@ -82,6 +86,26 @@ fun AppNavigation() {
                     }}
             )
         }
+    composable("pantalla_chat") {
+            PantallaChat(navController)
+        }
 
+        composable("pantalla_codigo") {
+            PantallaCodigo(navController)
+        }
+
+        /*
+        composable("pantalla_desvincular") {
+            PantallaDesvincularNino(navController)
+        }*/
+
+        composable("pantalla_mensajes/{nombreNino}") { backStackEntry ->
+            val nombreNino = backStackEntry.arguments?.getString("nombreNino") ?: ""
+            PantallaMensajes(navController, nombreNino)
+        }
+        composable("pantalla_principal") {
+            // aqui va la pantalla que esta haciendo tu compañero
+            // PantallaPrincipal(navController)
+        }
     }
 }

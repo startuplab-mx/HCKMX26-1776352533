@@ -1,6 +1,7 @@
 package com.example.ada
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -37,5 +38,31 @@ class MainActivity : ComponentActivity() {
                 AppNavigation()
             }
         }
+
+        TfLite.initialize(this).addOnSuccessListener {
+
+            lifecycleScope.launch {
+
+                try {
+                    val result = withContext(Dispatchers.Default) {
+                        val model = ModelTest(this@MainActivity)
+                        val tokenizer = model.loadTokenizer(this@MainActivity)
+
+                        model.predictText(
+                            "baby vamos a vernos",
+                            this@MainActivity)
+                    }
+
+                    Log.d("MODEL_RESULT", "Predicción exitosa: $result")
+
+                } catch (e: Exception) {
+                    Log.e("MODEL_ERROR", "Error: ${e.message}")
+                }
+            }
+
+        }.addOnFailureListener {
+            Log.e("MODEL_ERROR", "No se pudo inicializar TensorFlow Lite via GMS")
+        }
+
     }
 }

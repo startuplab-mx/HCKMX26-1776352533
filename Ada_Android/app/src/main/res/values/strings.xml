@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">ADA</string>
+    <string name="accessibility_description">ADA utiliza este servicio para detectar contenido peligroso en pantalla y proteger al menor.</string>
 </resources>
