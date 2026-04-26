@@ -1,5 +1,6 @@
 package com.example.ada.data.remote
 
+import com.example.ada.data.model.CrearCodigoResponse
 import com.example.ada.data.model.CrearEquipoRequest
 import com.example.ada.data.model.CrearEquipoResponse
 import com.example.ada.data.model.CrearSupervisadoRequest
@@ -55,4 +56,9 @@ interface ApiService {
     suspend fun vincularSupervisor(
         @Path("id") id: String
     ): Response<ResponseCodigo>
+
+    @POST("supervisado/codigo/vinculacion/{id}")
+    suspend fun crearCodigo(
+        @Path("id") id: String
+    ): Response<CrearCodigoResponse>
 }
