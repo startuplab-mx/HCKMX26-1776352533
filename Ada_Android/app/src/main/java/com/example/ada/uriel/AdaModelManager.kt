@@ -41,7 +41,7 @@ class AdaModelManager(private val context: Context) {
                     val result = model?.predictText(contextPrompt, context)
                     Log.d("ADA_AI", "Resultado de inferencia: $result")
 
-                    if (result != null && result >= 0.7f) {
+                    if (result != null && result <= 0.84f) {
                         AlertSender.send(
                             mensaje   = GlobalContext.formattedContext,
                             appOrigen = GlobalContext.sourceApp
