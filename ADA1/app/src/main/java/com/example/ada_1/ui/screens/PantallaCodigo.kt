@@ -1,4 +1,4 @@
-package com.example.ada_1.ui.screens
+package com.example.ada.ui.screens
 
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -30,8 +30,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.ada_1.R
-import com.example.ada_1.ui.theme.purplebottom
+import com.example.ada.R
+import com.example.ada.ui.theme.purplebottom
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
