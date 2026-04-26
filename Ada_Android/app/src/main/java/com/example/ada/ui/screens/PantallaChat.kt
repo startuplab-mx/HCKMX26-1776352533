@@ -24,10 +24,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.ada_1.R
-import com.example.ada_1.ui.theme.barrasuperior
-import com.example.ada_1.ui.theme.yellowbottom
-import com.example.ada_1.data.ChatNinoUI
+import com.example.ada.R
+import com.example.ada.ui.theme.yellowbottom
+import com.example.ada.ui.theme.barrasuperior
+import com.example.ada.data.ChatNinoUI
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -184,7 +184,7 @@ fun PantallaChat(navController: NavController) {
                     BotonFiltroApp("TikTok")
                 }
                 
-                Divider(color = Color.Gray.copy(alpha = 0.5f), thickness = 1.dp)
+                HorizontalDivider(color = Color.Gray.copy(alpha = 0.5f), thickness = 1.dp)
             }
         },
         floatingActionButton = {

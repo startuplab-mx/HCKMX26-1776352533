@@ -20,7 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.ada_1.R
+import com.example.ada.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
