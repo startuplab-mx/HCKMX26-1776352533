@@ -79,11 +79,13 @@ class MessageProcesor(private val modelManager: AdaModelManager) {
             contextWindow.removeFirst()
         }
 
-        val formattedContext = contextWindow.joinToString(separator = "\n") {
-            "[${it.role}]: ${it.text}"
-        }
+        val formattedContext = contextWindow
+            .filter { it.role == "ATACANTE" }
+            .joinToString(" ") { it.text }
 
+        GlobalContext.formattedContext = formattedContext
         Log.d("ADA_LOG", "Ventana de contexto enviada a IA:\n$formattedContext")
+
         modelManager.analyzeContext(formattedContext)
     }
 

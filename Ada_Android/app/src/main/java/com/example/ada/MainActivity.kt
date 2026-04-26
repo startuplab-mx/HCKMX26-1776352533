@@ -21,7 +21,7 @@ import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-
+import com.example.ada.uriel.GlobalContext
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,9 +42,9 @@ class MainActivity : ComponentActivity() {
                     val result = withContext(Dispatchers.Default) {
                         val model = ModelTest(this@MainActivity)
                         val tokenizer = model.loadTokenizer(this@MainActivity)
-
+                        val text = GlobalContext.formattedContext
                         model.predictText(
-                            "baby vamos a vernos",
+                            text,
                             this@MainActivity)
                     }
 
