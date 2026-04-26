@@ -1,4 +1,4 @@
-package com.example.ada_1.ui.screens
+package com.example.ada.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,8 +16,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.ada_1.R
-import com.example.ada_1.ui.theme.barrasuperior
+import com.example.ada.R
+import com.example.ada.ui.theme.barrasuperior
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
