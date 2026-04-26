@@ -211,3 +211,10 @@ En el desarrollo de este proyecto, se implementaron diversas herramientas de IA 
 
 ---
 
+## Materiales de diseño adicionales
+
+## Diagrama de arquitectura
+<img width="3217" height="4575" alt="image" src="https://github.com/user-attachments/assets/a1505ecb-b449-4fa1-8247-84b011745057" />
+
+## Diagrama markup
+https://www.figma.com/design/uTr2X90piKGonqaeBYiXaJ/Sin-t%C3%ADtulo?node-id=0-1&m=dev&t=NZJ1JgLP3qxA7bdt-1
