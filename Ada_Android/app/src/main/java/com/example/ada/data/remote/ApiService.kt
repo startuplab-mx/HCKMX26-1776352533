@@ -39,7 +39,7 @@ interface ApiService {
         @Body request: CrearSupervisadoRequest
     ): Response<CrearSupervisadoResponse>
 
-    @POST()
+    @POST("supervisor/registro/")
     suspend fun crearSupervisor(
         @Body request: CrearSupervisorRequest
     ): Response<CrearSupervisorResponse>

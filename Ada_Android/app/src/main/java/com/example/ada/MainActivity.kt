@@ -14,11 +14,22 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.ada.ui.navigation.AppNavigation
 import com.example.ada.ui.screens.BienvenidaScreen
 import com.example.ada.ui.theme.ADATheme
+import com.cloudinary.android.MediaManager
+import com.example.ada.utils.CloudinaryConfig
 
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val config = mapOf(
+            "cloud_name" to CloudinaryConfig.CLOUD_NAME
+        )
+
+        try {
+            MediaManager.init(this, config)
+        } catch (e: Exception) {
+            // Evita crash si ya estaba inicializado
+        }
         window.navigationBarColor = android.graphics.Color.parseColor("#080306")
         window.statusBarColor = android.graphics.Color.parseColor("#080306")
         setContent {

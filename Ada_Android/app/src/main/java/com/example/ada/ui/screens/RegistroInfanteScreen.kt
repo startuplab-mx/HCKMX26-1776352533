@@ -1,6 +1,6 @@
 package com.example.ada.ui.screens
 
-
+import android.util.Log
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -12,6 +12,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.*
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,16 +24,13 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.material3.Text
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.ada.R
-import androidx.compose.material3.*
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import com.example.ada.data.model.CrearSupervisadoRequest
+import com.example.ada.data.remote.RetrofitClient
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -45,12 +45,36 @@ fun RegistroInfanteScreen(
     var apellidoPaterno by remember { mutableStateOf("") }
     var apellidoMaterno by remember { mutableStateOf("") }
     var curp by remember { mutableStateOf("") }
+
+    val coroutineScope = rememberCoroutineScope()
+    var isLoading by remember { mutableStateOf(false) }
+    var mensajeError by remember { mutableStateOf<String?>(null) }
+
+    var showDatePicker by remember { mutableStateOf(false) }
+    var fechaSeleccionada by remember { mutableStateOf<Long?>(null) }
+
     val curpRegex = Regex(
         "^[A-Z][AEIOU][A-Z]{2}\\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\\d|3[01])[HM](AS|BC|BS|CC|CL|CM|CS|CH|DF|DG|GT|GR|HG|JC|MC|MN|MS|NT|NL|OC|PL|QT|QR|SP|SL|SR|TC|TS|TL|VZ|YN|ZS|NE)[B-DF-HJ-NP-TV-Z]{3}[A-Z0-9]\\d$"
     )
-    val infiniteTransition = rememberInfiniteTransition(label = "gradient")
 
     val curpValida = curp.isBlank() || curpRegex.matches(curp)
+
+    val formatter = remember {
+        SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+    }
+
+    val fechaTexto = fechaSeleccionada?.let {
+        formatter.format(Date(it))
+    } ?: ""
+
+    val camposLlenos =
+        nombre.isNotBlank() &&
+                apellidoPaterno.isNotBlank() &&
+                apellidoMaterno.isNotBlank() &&
+                fechaSeleccionada != null &&
+                curp.isNotBlank()
+
+    val infiniteTransition = rememberInfiniteTransition(label = "gradient")
 
     val offset by infiniteTransition.animateFloat(
         initialValue = 0f,
@@ -102,23 +126,6 @@ fun RegistroInfanteScreen(
                 .fillMaxSize()
                 .background(secondaryGlow)
         )
-        var showDatePicker by remember { mutableStateOf(false) }
-        var fechaSeleccionada by remember { mutableStateOf<Long?>(null) }
-
-        val formatter = remember {
-            SimpleDateFormat("yyyy/MM/dd", Locale.getDefault())
-        }
-
-        val fechaTexto = fechaSeleccionada?.let {
-            formatter.format(Date(it))
-        } ?: ""
-
-        val camposLlenos =
-            nombre.isNotBlank() &&
-                    apellidoPaterno.isNotBlank() &&
-                    apellidoMaterno.isNotBlank() &&
-                    fechaSeleccionada != null &&
-                    curp.isNotBlank()
 
         Column(
             modifier = Modifier
@@ -128,27 +135,30 @@ fun RegistroInfanteScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             if (showDatePicker) {
-
                 val datePickerState = rememberDatePickerState()
 
                 DatePickerDialog(
                     onDismissRequest = { showDatePicker = false },
                     confirmButton = {
-                        TextButton(onClick = {
-                            val selectedDate = datePickerState.selectedDateMillis
+                        TextButton(
+                            onClick = {
+                                val selectedDate = datePickerState.selectedDateMillis
 
-                            if (selectedDate != null) {
-                                fechaSeleccionada = selectedDate
-                                showDatePicker = false
+                                if (selectedDate != null) {
+                                    fechaSeleccionada = selectedDate
+                                    showDatePicker = false
+                                }
                             }
-                        }) {
+                        ) {
                             Text("Aceptar", color = Color(0xFFC77DFF))
                         }
                     },
                     dismissButton = {
-                        TextButton(onClick = {
-                            showDatePicker = false
-                        }) {
+                        TextButton(
+                            onClick = {
+                                showDatePicker = false
+                            }
+                        ) {
                             Text("Cancelar", color = Color(0xFFB8A9FF))
                         }
                     },
@@ -160,31 +170,25 @@ fun RegistroInfanteScreen(
                         state = datePickerState,
                         colors = DatePickerDefaults.colors(
                             containerColor = Color(0xFF0C0521),
-
                             titleContentColor = Color.White,
                             headlineContentColor = Color(0xFFC77DFF),
-
                             weekdayContentColor = Color(0xFFB8A9FF),
                             subheadContentColor = Color(0xFFB8A9FF),
-
                             yearContentColor = Color.White,
                             currentYearContentColor = Color(0xFFC77DFF),
-
                             selectedYearContentColor = Color.White,
                             selectedYearContainerColor = Color(0xFF7B2CBF),
-
                             dayContentColor = Color.White,
                             disabledDayContentColor = Color(0xFF555555),
-
                             selectedDayContentColor = Color.White,
                             selectedDayContainerColor = Color(0xFF9D4EDD),
-
                             todayContentColor = Color(0xFFC77DFF),
                             todayDateBorderColor = Color(0xFFC77DFF)
                         )
                     )
                 }
             }
+
             Spacer(modifier = Modifier.height(50.dp))
 
             Image(
@@ -257,7 +261,7 @@ fun RegistroInfanteScreen(
                 contentAlignment = Alignment.CenterStart
             ) {
                 Text(
-                    text = if (fechaTexto.isEmpty()) "YYYY/MM/DD" else fechaTexto,
+                    text = if (fechaTexto.isEmpty()) "YYYY-MM-DD" else fechaTexto,
                     color = if (fechaTexto.isEmpty()) Color(0xFFB8A9FF) else Color.White,
                     style = MaterialTheme.typography.bodyLarge
                 )
@@ -265,7 +269,17 @@ fun RegistroInfanteScreen(
 
             Spacer(modifier = Modifier.height(12.dp))
 
+            RegistroLabel2("CURP:")
 
+            PremiumTextInput(
+                value = curp,
+                onValueChange = {
+                    curp = it.uppercase().take(18)
+                },
+                placeholder = "Ej: ABCD010203HDFXXX09",
+                isError = curp.isNotEmpty() && !curpRegex.matches(curp),
+                shakeOffset = 0f
+            )
 
             if (curp.isNotEmpty() && !curpRegex.matches(curp)) {
                 Spacer(modifier = Modifier.height(6.dp))
@@ -277,10 +291,17 @@ fun RegistroInfanteScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
-
-
             Spacer(modifier = Modifier.height(38.dp))
+
+            if (mensajeError != null) {
+                Text(
+                    text = mensajeError!!,
+                    color = Color(0xFFFF4D6D),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+            }
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -289,15 +310,46 @@ fun RegistroInfanteScreen(
                 RegistroActionButton2(
                     text = "Cancelar",
                     modifier = Modifier.weight(1f),
+                    enabled = !isLoading,
                     onClick = onCancelarClick
                 )
 
                 RegistroActionButton2(
-                    text = "Registrarse",
+                    text = if (isLoading) "Guardando..." else "Registrarse",
                     modifier = Modifier.weight(1f),
-                    enabled = camposLlenos  && curpValida,                    onClick = {
+                    enabled = camposLlenos && curpValida && !isLoading,
+                    onClick = {
+                        coroutineScope.launch {
+                            isLoading = true
+                            mensajeError = null
 
-                        onRegistrarseClick()
+                            try {
+                                val request = CrearSupervisadoRequest(
+                                    nombre = nombre,
+                                    appat = apellidoPaterno,
+                                    apmat = apellidoMaterno,
+                                    fecha_nacimiento = fechaTexto,
+                                    curp = curp
+                                )
+
+                                val response = RetrofitClient.api.crearSupervisado(request)
+
+                                if (response.isSuccessful) {
+                                    Log.d("API", "Registro guardado: ${response.body()}")
+                                    onRegistrarseClick()
+                                } else {
+                                    val error = response.errorBody()?.string()
+                                    Log.e("API", "Error backend: $error")
+                                    mensajeError = "No se pudo guardar el registro"
+                                }
+
+                            } catch (e: Exception) {
+                                Log.e("API", "Error de conexión: ${e.message}")
+                                mensajeError = "Error de conexión con el servidor"
+                            } finally {
+                                isLoading = false
+                            }
+                        }
                     }
                 )
             }
@@ -306,7 +358,6 @@ fun RegistroInfanteScreen(
         }
     }
 }
-
 
 @Composable
 fun RegistroLabel2(
@@ -319,6 +370,7 @@ fun RegistroLabel2(
         modifier = Modifier.fillMaxWidth()
     )
 }
+
 @Composable
 fun RegistroActionButton2(
     text: String,
