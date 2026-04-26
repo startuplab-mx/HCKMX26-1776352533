@@ -470,3 +470,38 @@ export const vincularSupervisados = async (req, res) => {
         });
     }
 }
+
+export const obtenerResumenSupervisados = async (req, res) => {
+    try {
+        const { idSupervisor } = req.params;
+
+        if (!idSupervisor) {
+            return res.status(400).json({
+                error: 'El id del supervisor es requerido'
+            });
+        }
+
+        const { data, error } = await supabase
+            .rpc('obtener_resumen_supervisados', {
+                id_supervisor: idSupervisor
+            });
+
+        if (error) {
+            console.error(error);
+            return res.status(500).json({
+                error: 'Error al obtener los datos'
+            });
+        }
+
+        return res.status(200).json({
+            total: data.length,
+            data
+        });
+
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({
+            error: 'Error interno del servidor'
+        });
+    }
+};

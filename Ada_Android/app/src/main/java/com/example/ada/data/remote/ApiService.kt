@@ -10,6 +10,7 @@ import com.example.ada.data.model.CrearSupervisorResponse
 import com.example.ada.data.model.LoginRequest
 import com.example.ada.data.model.LoginResponse
 import com.example.ada.data.model.ResponseCodigo
+import com.example.ada.data.model.ResumenResponse
 import com.example.ada.data.model.consultarEquipos
 import retrofit2.Response
 import retrofit2.http.Body
@@ -61,4 +62,10 @@ interface ApiService {
     suspend fun crearCodigo(
         @Path("id") id: String
     ): Response<CrearCodigoResponse>
+
+    //Consultar Resumen
+    @GET("supervisor/resumen/{id }")
+    suspend fun consultarResumen(
+         @Path("id") id: String
+    ): Response<ResumenResponse>
 }
